@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>가나다순 고사성어 사전</title>
+    <title>고사성어 학습</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Pretendard:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -881,214 +881,77 @@
             return str.charAt(0);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const navContainer = document.getElementById('index-nav');
-            const contentContainer = document.getElementById('content-area');
-            
-            // 사용된 자음들만 추출하여 목차 생성
-            const usedChosungs = [...new Set(idiomsData.map(item => getChosung(item.name)))];
-            
-            usedChosungs.forEach(cho => {
-                // 네비게이션 버튼 생성
-                const btn = document.createElement('button');
-                btn.className = 'nav-item px-4 py-2 text-left rounded-md transition-colors text-[#7A6F5D] hover:bg-[#D4C9B3] whitespace-nowrap md:whitespace-normal font-medium';
-                btn.textContent = cho;
-                btn.onclick = () => {
-                    document.getElementById(`section-${cho}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                };
-                navContainer.appendChild(btn);
-
-                // 컨텐츠 섹션 생성
-                const section = document.createElement('div');
-                section.id = `section-${cho}`;
-                section.className = 'scroll-mt-40 md:scroll-mt-12'; // 모바일 헤더 고려
-                
-                const sectionTitle = document.createElement('h2');
-                sectionTitle.className = 'text-3xl font-bold mb-6 text-[#8C7A5E] border-b-2 border-[#8C7A5E] pb-2 inline-block';
-                sectionTitle.textContent = cho;
-                section.appendChild(sectionTitle);
-
-                const list = document.createElement('div');
-                list.className = 'space-y-6';
-
-                // 해당 자음의 데이터 필터링 및 렌더링
-                const sectionData = idiomsData.filter(item => getChosung(item.name) === cho);
-                
-                sectionData.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'bg-white p-6 rounded-xl shadow-sm border border-[#EFE9DB] hover:shadow-md transition-shadow';
-                    
-                    // 글자별 뱃지 HTML 생성
-                    const hanjaChars = item.hanja.split('');
-                    const badgesHTML = hanjaChars.map(char => 
-                        `<span class="inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded bg-[#F9F7F1] border border-[#D4C9B3] text-[#4A4133] hanja-text text-lg md:text-xl shadow-sm">${char}</span>`
-                    ).join('<span class="mx-1 text-[#D4C9B3]">-</span>');
-
-                    // 유래가 있는 경우에만 영역 표시
-                    let originHTML = '';
-                    if (item.origin && item.origin.trim().length > 0) {
-                        originHTML = `
-                        <div class="prose-text text-[#5C5549] leading-relaxed text-sm md:text-base mt-4 pt-4 border-t border-dashed border-[#D4C9B3]">
-                            <span class="font-semibold text-[#8C7A5E] block mb-1">📖 유래 및 해설:</span> 
-                            ${item.origin}
-                        </div>`;
-                    }
-                    
-                    card.innerHTML = `
-                        <div class="flex flex-col xl:flex-row xl:items-center gap-3 mb-4">
-                            <h3 class="text-2xl font-bold text-[#2D2A26] min-w-fit">${item.name}</h3>
-                            <div class="flex items-center flex-wrap gap-y-2">${badgesHTML}</div>
-                        </div>
-                        <div class="text-lg font-medium text-[#4A4133] bg-[#F9F7F1] p-3 rounded border-l-4 border-[#8C7A5E]">
-                            "${item.meaning}"
-                        </div>
-                        ${originHTML}
-                    `;
-                    list.appendChild(card);
-                });
-
-                section.appendChild(list);
-                contentContainer.appendChild(section);
-            });
-
-            // 첫 번째 목차 활성화 (텍스트 노드 오류를 방지하기 위해 querySelector 사용)
-            const firstNavItem = navContainer.querySelector('.nav-item');
-            if (firstNavItem) {
-                firstNavItem.classList.add('active');
-            }
-
-            // 스크롤 시 목차 하이라이트 변경 로직
-            const sections = document.querySelectorAll('[id^="section-"]');
-            const navItems = document.querySelectorAll('.nav-item');
-            
-            contentContainer.parentElement.addEventListener('scroll', () => {
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    // 부모 스크롤 컨테이너 기준으로 위치 계산
-                    if (contentContainer.parentElement.scrollTop >= sectionTop - 150) {
-                        current = section.getAttribute('id').replace('section-', '');
-                    }
-                });
-
-                navItems.forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.textContent === current) {
-                        btn.classList.add('active');
-                        // 모바일 화면에서 목차가 활성화된 쪽으로 자동 스크롤
-                        if(window.innerWidth < 768) {
-                           btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                        }
-                    }
-                });
-            });
-            
-            // 게임 초기화
-            initGame();
-        });
-
-        function switchTab(tabId) {
-            const dicView = document.getElementById('dictionary-view');
-            const gameView = document.getElementById('game-view');
-            const tabDic = document.getElementById('tab-dictionary');
-            const tabGame = document.getElementById('tab-game');
-
-            if (tabId === 'dictionary') {
-                dicView.classList.remove('hidden');
-                dicView.classList.add('flex');
-                gameView.classList.add('hidden');
-                gameView.classList.remove('flex');
-                
-                tabDic.classList.replace('border-transparent', 'border-[#D4C9B3]');
-                tabDic.classList.remove('opacity-60');
-                tabGame.classList.replace('border-[#D4C9B3]', 'border-transparent');
-                tabGame.classList.add('opacity-60');
-            } else {
-                gameView.classList.remove('hidden');
-                gameView.classList.add('flex');
-                dicView.classList.add('hidden');
-                dicView.classList.remove('flex');
-
-                tabGame.classList.replace('border-transparent', 'border-[#D4C9B3]');
-                tabGame.classList.remove('opacity-60');
-                tabDic.classList.replace('border-[#D4C9B3]', 'border-transparent');
-                tabDic.classList.add('opacity-60');
-            }
-        }
-
-        // 각 세트마다 완벽하게 교차(가로 6개, 세로 6개)되는 좌표 하드코딩
+        // 각 세트마다 완전히 다른 구조와 모형으로 게임판 설계
         const gameSets = [
-            [ // 세트 1
-                { word: "고진감래", type: "가로", row: 1, col: 1 },
-                { word: "고립무원", type: "세로", row: 1, col: 1 },
-                { word: "무위도식", type: "가로", row: 3, col: 1 },
-                { word: "도원결의", type: "세로", row: 3, col: 3 },
-                { word: "사면초가", type: "가로", row: 1, col: 7 },
-                { word: "사상누각", type: "세로", row: 1, col: 7 },
-                { word: "누란지위", type: "가로", row: 3, col: 7 },
-                { word: "지록위마", type: "세로", row: 3, col: 9 },
-                { word: "백발백중", type: "가로", row: 7, col: 1 },
-                { word: "백년가약", type: "세로", row: 7, col: 1 },
-                { word: "가인박명", type: "가로", row: 9, col: 1 },
-                { word: "박장대소", type: "세로", row: 9, col: 3 }
+            [ // 세트 1: 계단형태의 십자 교차
+                { word: "대기만성", type: "가로", row: 3, col: 1 },
+                { word: "천군만마", type: "세로", row: 1, col: 3 },
+                { word: "천재일우", type: "가로", row: 1, col: 3 },
+                { word: "우왕좌왕", type: "세로", row: 1, col: 6 },
+                { word: "동문서답", type: "가로", row: 9, col: 7 },
+                { word: "문전성시", type: "세로", row: 9, col: 8 },
+                { word: "우문현답", type: "세로", row: 6, col: 10 },
+                { word: "시종일관", type: "가로", row: 12, col: 8 },
+                { word: "고진감래", type: "가로", row: 8, col: 1 },
+                { word: "고립무원", type: "세로", row: 8, col: 1 },
+                { word: "무위도식", type: "가로", row: 10, col: 1 },
+                { word: "도원결의", type: "세로", row: 10, col: 3 }
             ],
-            [ // 세트 2
-                { word: "일석이조", type: "가로", row: 1, col: 1 },
-                { word: "일파만파", type: "세로", row: 1, col: 1 },
-                { word: "만고천추", type: "가로", row: 3, col: 1 },
-                { word: "천재일우", type: "세로", row: 3, col: 3 },
-                { word: "안하무인", type: "가로", row: 1, col: 7 },
-                { word: "안분지족", type: "세로", row: 1, col: 7 },
-                { word: "지란지교", type: "가로", row: 3, col: 7 },
-                { word: "지성감천", type: "세로", row: 3, col: 9 },
-                { word: "천고마비", type: "가로", row: 7, col: 1 },
-                { word: "천군만마", type: "세로", row: 7, col: 1 },
-                { word: "만시지탄", type: "가로", row: 9, col: 1 },
-                { word: "지행합일", type: "세로", row: 9, col: 3 }
+            [ // 세트 2: 지그재그와 빗장형의 혼합
+                { word: "마이동풍", type: "가로", row: 2, col: 6 },
+                { word: "풍전등화", type: "세로", row: 1, col: 9 },
+                { word: "화룡점정", type: "가로", row: 4, col: 9 },
+                { word: "정저지와", type: "세로", row: 4, col: 12 },
+                { word: "십중팔구", type: "가로", row: 8, col: 2 },
+                { word: "오리무중", type: "세로", row: 5, col: 3 },
+                { word: "구사일생", type: "세로", row: 8, col: 5 },
+                { word: "일취월장", type: "가로", row: 10, col: 5 },
+                { word: "개과천선", type: "가로", row: 2, col: 1 },
+                { word: "인과응보", type: "세로", row: 1, col: 2 },
+                { word: "선견지명", type: "세로", row: 2, col: 4 },
+                { word: "지록위마", type: "가로", row: 4, col: 4 }
             ],
-            [ // 세트 3
-                { word: "유비무환", type: "가로", row: 1, col: 1 },
-                { word: "유명무실", type: "세로", row: 1, col: 1 },
-                { word: "무지몽매", type: "가로", row: 3, col: 1 },
-                { word: "몽중설몽", type: "세로", row: 3, col: 3 },
-                { word: "기고만장", type: "가로", row: 1, col: 7 },
-                { word: "기사회생", type: "세로", row: 1, col: 7 },
-                { word: "회자정리", type: "가로", row: 3, col: 7 },
-                { word: "정문일침", type: "세로", row: 3, col: 9 },
-                { word: "우공이산", type: "가로", row: 7, col: 1 },
-                { word: "우왕좌왕", type: "세로", row: 7, col: 1 },
-                { word: "좌고우면", type: "가로", row: 9, col: 1 },
-                { word: "우문현답", type: "세로", row: 9, col: 3 }
+            [ // 세트 3: 중앙 집중 및 긴 꼬리형
+                { word: "과유불급", type: "가로", row: 6, col: 2 },
+                { word: "유명무실", type: "세로", row: 6, col: 3 },
+                { word: "무위도식", type: "가로", row: 8, col: 3 },
+                { word: "식자우환", type: "세로", row: 8, col: 6 },
+                { word: "일석이조", type: "가로", row: 2, col: 9 },
+                { word: "일취월장", type: "세로", row: 2, col: 9 },
+                { word: "장삼이사", type: "가로", row: 5, col: 9 },
+                { word: "사면초가", type: "세로", row: 5, col: 12 },
+                { word: "감탄고토", type: "가로", row: 11, col: 1 },
+                { word: "동고동락", type: "세로", row: 10, col: 3 },
+                { word: "동상이몽", type: "가로", row: 12, col: 3 },
+                { word: "몽중설몽", type: "세로", row: 9, col: 6 }
             ],
-            [ // 세트 4
-                { word: "전전긍긍", type: "가로", row: 1, col: 1 },
-                { word: "전전반측", type: "세로", row: 1, col: 1 },
-                { word: "반신반의", type: "가로", row: 3, col: 1 },
-                { word: "반목질시", type: "세로", row: 3, col: 3 },
-                { word: "호가호위", type: "가로", row: 1, col: 7 },
-                { word: "호시탐탐", type: "세로", row: 1, col: 7 },
-                { word: "탐관오리", type: "가로", row: 3, col: 7 },
-                { word: "오리무중", type: "세로", row: 3, col: 9 },
-                { word: "구사일생", type: "가로", row: 7, col: 1 },
-                { word: "구밀복검", type: "세로", row: 7, col: 1 },
-                { word: "복수불반", type: "가로", row: 9, col: 1 },
-                { word: "불철주야", type: "세로", row: 9, col: 3 }
+            [ // 세트 4: 외곽을 두르는 거대한 사각형태
+                { word: "막상막하", type: "가로", row: 4, col: 4 },
+                { word: "상전벽해", type: "세로", row: 4, col: 5 },
+                { word: "결자해지", type: "가로", row: 7, col: 3 },
+                { word: "결초보은", type: "세로", row: 7, col: 3 },
+                { word: "금상첨화", type: "가로", row: 1, col: 1 },
+                { word: "금지옥엽", type: "세로", row: 1, col: 1 },
+                { word: "지록위마", type: "가로", row: 2, col: 1 },
+                { word: "마이동풍", type: "세로", row: 2, col: 4 },
+                { word: "다다익선", type: "가로", row: 10, col: 7 },
+                { word: "선견지명", type: "세로", row: 10, col: 10 },
+                { word: "명약관화", type: "가로", row: 13, col: 10 },
+                { word: "수수방관", type: "세로", row: 10, col: 12 }
             ],
-            [ // 세트 5
-                { word: "일사불란", type: "가로", row: 1, col: 1 },
-                { word: "일망타진", type: "세로", row: 1, col: 1 },
-                { word: "타산지석", type: "가로", row: 3, col: 1 },
-                { word: "지기지우", type: "세로", row: 3, col: 3 },
-                { word: "자가당착", type: "가로", row: 1, col: 7 },
-                { word: "자격지심", type: "세로", row: 1, col: 7 },
-                { word: "지성감천", type: "가로", row: 3, col: 7 },
-                { word: "감언이설", type: "세로", row: 3, col: 9 },
-                { word: "유유상종", type: "가로", row: 7, col: 1 },
-                { word: "유유자적", type: "세로", row: 7, col: 1 },
-                { word: "자승자박", type: "가로", row: 9, col: 1 },
-                { word: "자업자득", type: "세로", row: 9, col: 3 }
+            [ // 세트 5: 넓게 퍼진 사선형 징검다리
+                { word: "백발백중", type: "가로", row: 2, col: 2 },
+                { word: "중과부적", type: "세로", row: 2, col: 5 },
+                { word: "적반하장", type: "가로", row: 5, col: 5 },
+                { word: "장삼이사", type: "세로", row: 5, col: 8 },
+                { word: "구우일모", type: "가로", row: 1, col: 8 },
+                { word: "일거양득", type: "세로", row: 1, col: 10 },
+                { word: "양두구육", type: "가로", row: 3, col: 10 },
+                { word: "고육지계", type: "세로", row: 2, col: 13 },
+                { word: "조령모개", type: "가로", row: 10, col: 2 },
+                { word: "개과천선", type: "세로", row: 10, col: 5 },
+                { word: "청천벽력", type: "가로", row: 12, col: 4 },
+                { word: "독야청청", type: "세로", row: 9, col: 4 }
             ]
         ];
 
@@ -1268,6 +1131,117 @@
                 }
             }
         }
+
+        // 탭 전환 기능
+        function switchTab(tabId) {
+            const dictView = document.getElementById('dictionary-view');
+            const gameView = document.getElementById('game-view');
+            const tabDict = document.getElementById('tab-dictionary');
+            const tabGame = document.getElementById('tab-game');
+
+            if (tabId === 'dictionary') {
+                dictView.classList.remove('hidden');
+                dictView.classList.add('flex');
+                gameView.classList.add('hidden');
+                gameView.classList.remove('flex', 'flex-col');
+                
+                tabDict.classList.add('border-[#D4C9B3]');
+                tabDict.classList.remove('border-transparent', 'opacity-60', 'hover:opacity-100');
+                tabGame.classList.add('border-transparent', 'opacity-60', 'hover:opacity-100');
+                tabGame.classList.remove('border-[#D4C9B3]');
+            } else {
+                dictView.classList.add('hidden');
+                dictView.classList.remove('flex');
+                gameView.classList.remove('hidden');
+                gameView.classList.add('flex', 'flex-col');
+                
+                tabGame.classList.add('border-[#D4C9B3]');
+                tabGame.classList.remove('border-transparent', 'opacity-60', 'hover:opacity-100');
+                tabDict.classList.add('border-transparent', 'opacity-60', 'hover:opacity-100');
+                tabDict.classList.remove('border-[#D4C9B3]');
+            }
+        }
+
+        // 고사성어 사전 렌더링 기능
+        function renderDictionary() {
+            const indexNav = document.getElementById('index-nav');
+            const contentArea = document.getElementById('content-area');
+            
+            // 데이터를 초성별로 그룹화
+            const grouped = {};
+            idiomsData.forEach(item => {
+                const cho = getChosung(item.name);
+                if (!grouped[cho]) grouped[cho] = [];
+                grouped[cho].push(item);
+            });
+
+            // 가나다순(ㄱ, ㄴ, ㄷ...) 렌더링
+            const choKeys = Object.keys(grouped).sort();
+            
+            choKeys.forEach(cho => {
+                // 좌측 목차 버튼 생성
+                const navBtn = document.createElement('a');
+                navBtn.href = `#section-${cho}`;
+                navBtn.className = "px-4 py-2 bg-white rounded-lg shadow-sm font-bold text-center text-[#4A4133] hover:bg-[#8C7A5E] hover:text-white transition-colors shrink-0 md:shrink";
+                navBtn.innerText = cho;
+                indexNav.appendChild(navBtn);
+
+                // 우측 콘텐츠 섹션 생성
+                const section = document.createElement('div');
+                section.id = `section-${cho}`;
+                section.className = "mb-12 pt-4";
+                
+                const title = document.createElement('h2');
+                title.className = "text-2xl font-bold text-[#8C7A5E] mb-6 border-b-2 border-[#D4C9B3] pb-2";
+                title.innerText = cho;
+                section.appendChild(title);
+
+                // 성어 카드 그리드
+                const grid = document.createElement('div');
+                grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+
+                grouped[cho].forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-6 rounded-xl shadow-sm border border-[#EFE9DB] hover:shadow-md transition-shadow flex flex-col h-full";
+                    
+                    // 유래가 있는 경우에만 영역 표시
+                    let originHtml = '';
+                    if (item.origin) {
+                        originHtml = `
+                            <div class="mt-auto pt-4 border-t border-[#F0EBE1]">
+                                <h4 class="text-sm font-bold text-[#8C7A5E] mb-2">유래 및 해설</h4>
+                                <p class="text-sm text-[#7A6F5D] leading-relaxed prose-text">${item.origin}</p>
+                            </div>
+                        `;
+                    }
+
+                    // 한자를 각각 뱃지로 분리하여 표시
+                    let hanjaSpans = '';
+                    for (let i = 0; i < item.hanja.length; i++) {
+                        hanjaSpans += `<span class="inline-block bg-[#F9F7F1] text-[#4A4133] text-sm px-1.5 py-0.5 rounded border border-[#EFE9DB] mr-1">${item.hanja[i]}</span>`;
+                    }
+
+                    card.innerHTML = `
+                        <div class="mb-3">
+                            <h3 class="text-2xl font-bold text-[#2D2A26] hanja-text">${item.name}</h3>
+                        </div>
+                        <div class="mb-3">${hanjaSpans}</div>
+                        <p class="text-base text-[#4A4133] font-medium leading-relaxed mb-4">${item.meaning}</p>
+                        ${originHtml}
+                    `;
+                    grid.appendChild(card);
+                });
+                
+                section.appendChild(grid);
+                contentArea.appendChild(section);
+            });
+        }
+
+        // 페이지 로드 시 초기화 실행
+        window.addEventListener('DOMContentLoaded', () => {
+            renderDictionary();
+            initGame();
+        });
     </script>
 </body>
 </html>
