@@ -73,36 +73,37 @@
 </head>
 <body class="text-gray-800 font-sans min-h-screen flex flex-col">
     <!-- STREAMING_CHUNK:Building the header... -->
-    <header class="bg-white border-b border-gray-200 py-5">
+    <header class="bg-white border-b border-gray-200 py-4 md:py-5">
         <div class="max-w-[1400px] mx-auto px-4 w-full relative">
             <div class="flex items-center justify-between gap-4 h-[3rem]">
                 <span id="academic-term-display" class="text-sm md:text-lg font-semibold text-gray-500 tracking-tight shrink-0">2026학년도 2학기</span>
                 
-                <h1 class="absolute left-1/2 -translate-x-1/2 text-4xl md:text-5xl tracking-tight leading-none text-primary font-bold whitespace-nowrap">
+                <h1 class="absolute left-1/2 -translate-x-1/2 text-2xl md:text-4xl lg:text-5xl tracking-tight leading-none text-primary font-bold whitespace-nowrap">
                     교과 교실 운영 현황
                 </h1>
 
-                <button onclick="toggleAdminModal()" class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md shadow-sm text-lg font-bold transition-all flex items-center whitespace-nowrap ml-auto">
-                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    데이터 관리
+                <button onclick="toggleAdminModal()" class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-md shadow-sm text-sm md:text-lg font-bold transition-all flex items-center whitespace-nowrap ml-auto">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 mr-1 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span class="hidden sm:inline">데이터 관리</span>
+                    <span class="sm:hidden">관리</span>
                 </button>
             </div>
         </div>
     </header>
 
     <!-- STREAMING_CHUNK:Setting up the main content container and standalone navigation... -->
-    <div class="flex-grow flex flex-col w-full max-w-[1400px] mx-auto px-2 sm:px-4 mt-6 mb-8">
+    <div class="flex-grow flex flex-col w-full max-w-[1400px] mx-auto px-2 sm:px-4 mt-4 md:mt-6 mb-8">
         
         <!-- 독립된 네비게이션 박스 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-3 mb-5 w-fit mx-auto flex justify-center overflow-x-auto">
-            <nav class="flex flex-row justify-center gap-4 min-w-max" id="main-nav">
-                <button onclick="setMainTab('overlap')" id="tab-overlap" class="tab-btn active bg-white border border-gray-300 text-gray-700 px-8 py-3.5 rounded-full text-xl font-bold whitespace-nowrap">교실 중복 및 이동 안내</button>
-                <button onclick="setMainTab('assignment')" id="tab-assignment" class="tab-btn bg-white border border-gray-300 text-gray-700 px-8 py-3.5 rounded-full text-xl font-bold whitespace-nowrap">교실 배정 현황</button>
-                <button onclick="setMainTab('empty')" id="tab-empty" class="tab-btn bg-white border border-gray-300 text-gray-700 px-8 py-3.5 rounded-full text-xl font-bold whitespace-nowrap">공강 교실 현황</button>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-2 md:p-3 mb-4 md:mb-5 w-full md:w-fit mx-auto flex justify-start md:justify-center overflow-x-auto scrollbar-hide">
+            <nav class="flex flex-row justify-start md:justify-center gap-2 md:gap-4 min-w-max px-2" id="main-nav">
+                <button onclick="setMainTab('overlap')" id="tab-overlap" class="tab-btn active bg-white border border-gray-300 text-gray-700 px-4 md:px-8 py-2 md:py-3.5 rounded-full text-sm md:text-xl font-bold whitespace-nowrap">교실 중복 및 이동 안내</button>
+                <button onclick="setMainTab('assignment')" id="tab-assignment" class="tab-btn bg-white border border-gray-300 text-gray-700 px-4 md:px-8 py-2 md:py-3.5 rounded-full text-sm md:text-xl font-bold whitespace-nowrap">교실 배정 현황</button>
+                <button onclick="setMainTab('empty')" id="tab-empty" class="tab-btn bg-white border border-gray-300 text-gray-700 px-4 md:px-8 py-2 md:py-3.5 rounded-full text-sm md:text-xl font-bold whitespace-nowrap">공강 교실 현황</button>
             </nav>
         </div>
 
-        <main id="content-container" class="flex-grow bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-8 overflow-hidden flex flex-col relative min-h-[600px]">
+        <main id="content-container" class="flex-grow bg-white rounded-2xl shadow-sm border border-gray-200 p-3 sm:p-8 overflow-hidden flex flex-col relative min-h-[600px]">
         </main>
     </div>
 
@@ -110,59 +111,59 @@
     <div id="admin-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] flex justify-center items-center hidden p-4">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6 border-b pb-4">
-                <h2 class="text-3xl font-bold text-gray-800 flex items-center">
-                    <svg class="w-8 h-8 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 flex items-center">
+                    <svg class="w-6 h-6 md:w-8 md:h-8 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
                     데이터 관리
                 </h2>
                 <button onclick="toggleAdminModal()" class="text-gray-500 hover:text-red-500 transition-colors">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <div class="space-y-6">
-                <div class="bg-blue-50 text-blue-800 p-5 rounded-lg text-lg font-medium">
+            <div class="space-y-4 md:space-y-6">
+                <div class="bg-blue-50 text-blue-800 p-4 md:p-5 rounded-lg text-sm md:text-lg font-medium">
                     <p>💡 <strong>데이터 업데이트 방법</strong></p>
                     <p class="mt-2">1. <strong>[다운로드]</strong> 버튼을 눌러 엑셀 파일(.xlsx)을 받습니다.</p>
                     <p>2. 엑셀로 열어 데이터를 알맞게 수정 후 저장합니다.</p>
                     <p>3. <strong>[파일 선택]</strong>을 눌러 수정한 엑셀 파일을 업로드하면 즉시 반영됩니다.</p>
                 </div>
 
-                <div class="border border-gray-200 p-5 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50">
-                    <div class="flex-grow w-full flex flex-col md:flex-row gap-4">
+                <div class="border border-gray-200 p-4 md:p-5 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50">
+                    <div class="flex-grow w-full flex flex-col sm:flex-row gap-4">
                         <div class="w-full">
-                            <label class="block text-lg font-bold text-gray-700 mb-1.5">1학기 시작 (월-일)</label>
-                            <input type="text" id="setting-term1" placeholder="03-01" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-lg outline-none focus:border-primary text-center font-bold">
+                            <label class="block text-sm md:text-lg font-bold text-gray-700 mb-1.5">1학기 시작 (월-일)</label>
+                            <input type="text" id="setting-term1" placeholder="03-01" class="w-full bg-white border border-gray-300 p-2 md:p-2.5 rounded-lg text-base md:text-lg outline-none focus:border-primary text-center font-bold">
                         </div>
                         <div class="w-full">
-                            <label class="block text-lg font-bold text-gray-700 mb-1.5">2학기 시작 (월-일)</label>
-                            <input type="text" id="setting-term2" placeholder="08-16" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-lg outline-none focus:border-primary text-center font-bold">
+                            <label class="block text-sm md:text-lg font-bold text-gray-700 mb-1.5">2학기 시작 (월-일)</label>
+                            <input type="text" id="setting-term2" placeholder="08-16" class="w-full bg-white border border-gray-300 p-2 md:p-2.5 rounded-lg text-base md:text-lg outline-none focus:border-primary text-center font-bold">
                         </div>
                     </div>
-                    <button onclick="saveTermDates()" class="bg-primary hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-bold text-lg whitespace-nowrap w-full md:w-auto mt-auto shadow-sm">기준일 저장</button>
+                    <button onclick="saveTermDates()" class="bg-primary hover:bg-blue-800 text-white px-6 md:px-8 py-2.5 md:py-3 rounded-lg font-bold text-base md:text-lg whitespace-nowrap w-full md:w-auto mt-auto shadow-sm">기준일 저장</button>
                 </div>
 
-                <div class="border border-gray-200 p-5 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="border border-gray-200 p-4 md:p-5 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="flex-grow w-full">
-                        <h3 class="font-bold text-2xl text-gray-700 mb-3">교실 배정 현황</h3>
-                        <input type="file" accept=".xlsx, .xls" class="text-lg file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-lg file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 cursor-pointer w-full" onchange="handleFileUpload(event, 'assignment')">
+                        <h3 class="font-bold text-lg md:text-2xl text-gray-700 mb-2 md:mb-3">교실 배정 현황</h3>
+                        <input type="file" accept=".xlsx, .xls" class="text-sm md:text-lg file:mr-4 file:py-2 md:file:py-2.5 file:px-4 md:file:px-5 file:rounded-lg file:border-0 file:text-sm md:file:text-lg file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 cursor-pointer w-full" onchange="handleFileUpload(event, 'assignment')">
                     </div>
-                    <button onclick="downloadData('assignment')" class="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-medium text-lg whitespace-nowrap w-full md:w-auto">다운로드</button>
+                    <button onclick="downloadData('assignment')" class="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-800 px-6 py-2.5 md:py-3 rounded-lg font-medium text-base md:text-lg whitespace-nowrap w-full md:w-auto">다운로드</button>
                 </div>
-                <div class="border border-gray-200 p-5 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="border border-gray-200 p-4 md:p-5 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="flex-grow w-full">
-                        <h3 class="font-bold text-2xl text-gray-700 mb-3">공강 교실 현황 (2학년)</h3>
-                        <input type="file" accept=".xlsx, .xls" class="text-lg file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-lg file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 cursor-pointer w-full" onchange="handleFileUpload(event, 'empty2')">
+                        <h3 class="font-bold text-lg md:text-2xl text-gray-700 mb-2 md:mb-3">공강 교실 현황 (2학년)</h3>
+                        <input type="file" accept=".xlsx, .xls" class="text-sm md:text-lg file:mr-4 file:py-2 md:file:py-2.5 file:px-4 md:file:px-5 file:rounded-lg file:border-0 file:text-sm md:file:text-lg file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 cursor-pointer w-full" onchange="handleFileUpload(event, 'empty2')">
                     </div>
-                    <button onclick="downloadData('empty2')" class="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-medium text-lg whitespace-nowrap w-full md:w-auto">다운로드</button>
+                    <button onclick="downloadData('empty2')" class="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-800 px-6 py-2.5 md:py-3 rounded-lg font-medium text-base md:text-lg whitespace-nowrap w-full md:w-auto">다운로드</button>
                 </div>
-                <div class="border border-gray-200 p-5 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="border border-gray-200 p-4 md:p-5 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="flex-grow w-full">
-                        <h3 class="font-bold text-2xl text-gray-700 mb-3">공강 교실 현황 (3학년)</h3>
-                        <input type="file" accept=".xlsx, .xls" class="text-lg file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-lg file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 cursor-pointer w-full" onchange="handleFileUpload(event, 'empty3')">
+                        <h3 class="font-bold text-lg md:text-2xl text-gray-700 mb-2 md:mb-3">공강 교실 현황 (3학년)</h3>
+                        <input type="file" accept=".xlsx, .xls" class="text-sm md:text-lg file:mr-4 file:py-2 md:file:py-2.5 file:px-4 md:file:px-5 file:rounded-lg file:border-0 file:text-sm md:file:text-lg file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 cursor-pointer w-full" onchange="handleFileUpload(event, 'empty3')">
                     </div>
-                    <button onclick="downloadData('empty3')" class="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-medium text-lg whitespace-nowrap w-full md:w-auto">다운로드</button>
+                    <button onclick="downloadData('empty3')" class="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-800 px-6 py-2.5 md:py-3 rounded-lg font-medium text-base md:text-lg whitespace-nowrap w-full md:w-auto">다운로드</button>
                 </div>
-                <div class="pt-5 border-t border-gray-200 flex justify-end">
-                    <button onclick="confirmResetAllData()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-sm w-full md:w-auto text-lg">
+                <div class="pt-4 md:pt-5 border-t border-gray-200 flex justify-end">
+                    <button onclick="confirmResetAllData()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 md:py-3 px-6 md:px-8 rounded-lg transition-colors shadow-sm w-full md:w-auto text-base md:text-lg">
                         모든 데이터 초기화 (주의)
                     </button>
                 </div>
@@ -172,11 +173,11 @@
 
     <!-- STREAMING_CHUNK:Creating the custom message modal... -->
     <div id="custom-msg-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[200] flex justify-center items-center hidden p-4">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg text-center">
-            <p id="custom-msg-text" class="text-gray-800 text-2xl mb-8 whitespace-pre-line font-medium leading-relaxed"></p>
+        <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg text-center">
+            <p id="custom-msg-text" class="text-gray-800 text-xl md:text-2xl mb-6 md:mb-8 whitespace-pre-line font-medium leading-relaxed"></p>
             <div class="flex justify-center space-x-4">
-                <button id="custom-msg-cancel" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-lg transition-colors hidden text-lg">취소</button>
-                <button id="custom-msg-confirm" class="bg-primary hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-sm text-lg">확인</button>
+                <button id="custom-msg-cancel" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 md:py-3 px-6 md:px-8 rounded-lg transition-colors hidden text-base md:text-lg">취소</button>
+                <button id="custom-msg-confirm" class="bg-primary hover:bg-blue-800 text-white font-bold py-2.5 md:py-3 px-6 md:px-8 rounded-lg transition-colors shadow-sm text-base md:text-lg">확인</button>
             </div>
         </div>
     </div>
@@ -291,7 +292,6 @@
 
         /* STREAMING_CHUNK:Calculating and updating academic term based on current state... */
         function updateAcademicTermDisplay() {
-            // 이제 단순히 '오늘 날짜'가 아닌, 사용자가 선택한 날짜(state.selectedDate)를 기준으로 계산합니다.
             const targetDate = new Date(state.selectedDate);
             const y = targetDate.getFullYear();
             const m = String(targetDate.getMonth() + 1).padStart(2, '0');
@@ -321,7 +321,7 @@
             }
         }
 
-        /* STREAMING_CHUNK:Defining date formatting and notice HTML generation... */
+        /* STREAMING_CHUNK:Defining date formatting and coloring functions... */
         function formatDate(dateStr) {
             const d = new Date(dateStr);
             const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -341,14 +341,36 @@
             return dates;
         }
 
+        // 화면 렌더링 시 특정 키워드에 색상을 자동으로 입혀주는 함수
+        function highlightText(text) {
+            if (!text) return '-';
+            let html = text;
+            const blueKeywords = ["윤혜진", "정은정", "박소현", "한지숙", "홍유리", "김건우"];
+            const purpleKeywords = ["스포츠"];
+
+            blueKeywords.forEach(kw => {
+                // 이름 뒤에 괄호로 설명이 붙은 부분을 통째로 파란색 처리 (예: 윤혜진(일본어 A, 목 5~7))
+                const regex = new RegExp(`(${kw}\\([^)]+\\))`, 'g');
+                html = html.replace(regex, `<span class="text-blue-700 font-bold">$1</span>`);
+            });
+
+            purpleKeywords.forEach(kw => {
+                 const regex = new RegExp(`(${kw}\\([^)]+\\))`, 'g');
+                 html = html.replace(regex, `<span class="text-purple-700 font-bold">$1</span>`);
+            });
+
+            return html;
+        }
+
+        /* STREAMING_CHUNK:Notice HTML generation... */
         function getGeneralNoticeHTML() {
             return `
-                <div class="bg-blue-50 border border-blue-100 p-8 mt-6 rounded-xl shadow-sm">
-                    <h2 class="text-2xl font-bold text-primary mb-4 flex items-center">
-                        <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div class="bg-blue-50 border border-blue-100 p-6 md:p-8 mt-6 rounded-xl shadow-sm">
+                    <h2 class="text-xl md:text-2xl font-bold text-primary mb-3 md:mb-4 flex items-center">
+                        <svg class="w-6 h-6 md:w-7 md:h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         안내 사항
                     </h2>
-                    <ol class="list-decimal indent-list text-gray-700 font-medium text-lg md:text-xl">
+                    <ol class="list-decimal indent-list text-gray-700 font-medium text-base md:text-xl">
                         <li>교과 담당 교사는 시간이 이동되었을 경우, 교실 중복 여부를 확인하고 관련 내용(요일, 교시, 이동할 교실 등)을 학생들에게 안내하고 그 여부를 '학생 안내' 체크 박스에 표시하고 저장합니다.</li>
                         <li>공강 교실이라도 해당 교실의 수업 교사도 시간 이동이 될 수 있으니 컴시간 알리미를 통해 해당 교실에 수업이 없는지 확인합니다.</li>
                         <li>학급 담임 교사는 학생들에게 시간 이동 관련 안내를 받았는지 확인합니다.</li>
@@ -362,12 +384,12 @@
 
         function getAssignmentNoticeHTML() {
             return `
-                <div class="bg-blue-50 border border-blue-100 p-8 mt-6 rounded-xl shadow-sm">
-                    <h2 class="text-2xl font-bold text-primary mb-4 flex items-center">
-                        <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div class="bg-blue-50 border border-blue-100 p-6 md:p-8 mt-6 rounded-xl shadow-sm">
+                    <h2 class="text-xl md:text-2xl font-bold text-primary mb-3 md:mb-4 flex items-center">
+                        <svg class="w-6 h-6 md:w-7 md:h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         안내 사항
                     </h2>
-                    <ol class="list-decimal indent-list text-gray-700 font-medium text-lg md:text-xl">
+                    <ol class="list-decimal indent-list text-gray-700 font-medium text-base md:text-xl">
                         <li>교실별 탭에서 공동 사용자를 확인하고, 수업 시간이 이동되었을 경우 교실 중복 여부를 반드시 확인합니다.</li>
                         <li>교사별 탭에서 사용하는 교실을 확인하고, 여러 교실에 배정되어 있을 경우 학년과 학급을 잘 숙지하여 교실에 입실합니다.</li>
                         <li>공강 교실 현황을 이용할 때는 반드시 원래 배정된 교사의 수업 이동 여부도 컴시간 알리미를 통해 확인합니다.</li>
@@ -378,12 +400,12 @@
 
         function getReferenceNoticeHTML() {
             return `
-                <div class="bg-white border border-gray-200 p-6 mt-6 rounded-xl shadow-sm">
-                    <h2 class="text-xl font-bold text-primary mb-3 flex items-center">
+                <div class="bg-white border border-gray-200 p-5 md:p-6 mt-6 rounded-xl shadow-sm">
+                    <h2 class="text-lg md:text-xl font-bold text-primary mb-3 flex items-center">
                         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         참고
                     </h2>
-                    <ul class="list-disc indent-list text-gray-700 font-medium text-lg leading-relaxed">
+                    <ul class="list-disc indent-list text-gray-700 font-medium text-base md:text-lg leading-relaxed">
                         <li>DS 1실과 시청각실(주경미), DS 3실(홍지연), 상상나래실(박혜란)은 관리 담당자와 의논한 후 사용.</li>
                         <li>지정된 학급(목요일 3학년 1~2교시, 2학년 3~4교시)은 우천 시 스포츠 사용, 평소에는 사용 가능.</li>
                         <li>빈 교실 사용하고자 할 때, 해당 교실의 원 배정 교사의 수업 이동도 확인한 후 사용.</li>
@@ -438,7 +460,7 @@
             let isLightGreen = false; // 첫 그룹이 흰색이 되도록 초기값 false
 
             let tableRows = displayData.map((d, index) => {
-                const coUserText = d.coUser ? d.coUser : '-';
+                const coUserText = highlightText(d.coUser); // 색상 입히는 함수 호출
                 const groupKey = isTeacherView ? d.name : d.room;
 
                 if (groupKey !== currentKey) {
@@ -452,19 +474,19 @@
                 if (isTeacherView) {
                     return `
                     <tr class="${rowClass}">
-                        <td class="px-4 py-5 font-bold text-gray-900 border-r border-gray-200 text-lg">${d.name || '-'}</td>
-                        <td class="px-4 py-5 font-bold text-gray-800 text-lg">${d.room}</td>
-                        <td class="px-4 py-5 text-gray-700 text-lg">${d.subject || '-'}</td>
-                        <td class="px-4 py-5 text-lg text-center">${coUserText}</td>
+                        <td class="px-3 md:px-4 py-4 md:py-5 font-bold text-gray-900 border-r border-gray-200 text-sm md:text-lg">${d.name || '-'}</td>
+                        <td class="px-3 md:px-4 py-4 md:py-5 font-bold text-gray-800 text-sm md:text-lg">${d.room}</td>
+                        <td class="px-3 md:px-4 py-4 md:py-5 text-gray-700 text-sm md:text-lg">${d.subject || '-'}</td>
+                        <td class="px-3 md:px-4 py-4 md:py-5 text-sm md:text-lg text-left md:text-center">${coUserText}</td>
                     </tr>
                     `;
                 } else {
                     return `
                     <tr class="${rowClass}">
-                        <td class="px-4 py-5 font-bold text-gray-900 border-r border-gray-200 w-32 text-lg">${d.room}</td>
-                        <td class="px-4 py-5 font-bold text-gray-800 w-32 text-lg">${d.name || '-'}</td>
-                        <td class="px-4 py-5 text-gray-700 w-40 text-lg">${d.subject || '-'}</td>
-                        <td class="px-4 py-5 text-lg text-center">${coUserText}</td>
+                        <td class="px-3 md:px-4 py-4 md:py-5 font-bold text-gray-900 border-r border-gray-200 w-24 md:w-32 text-sm md:text-lg">${d.room}</td>
+                        <td class="px-3 md:px-4 py-4 md:py-5 font-bold text-gray-800 w-24 md:w-32 text-sm md:text-lg">${d.name || '-'}</td>
+                        <td class="px-3 md:px-4 py-4 md:py-5 text-gray-700 w-28 md:w-40 text-sm md:text-lg">${d.subject || '-'}</td>
+                        <td class="px-3 md:px-4 py-4 md:py-5 text-sm md:text-lg text-left md:text-center">${coUserText}</td>
                     </tr>
                     `;
                 }
@@ -472,32 +494,32 @@
 
             let headerHTML = isTeacherView ? `
                 <tr>
-                    <th class="px-4 py-5 font-bold border-r border-gray-300 w-32 text-lg">이름</th>
-                    <th class="px-4 py-5 font-bold border-r border-gray-300 w-32 text-lg">배정 교실</th>
-                    <th class="px-4 py-5 font-bold border-r border-gray-300 w-40 text-lg">교과</th>
-                    <th class="px-4 py-5 font-bold text-lg">공동 사용자</th>
+                    <th class="px-3 md:px-4 py-4 md:py-5 font-bold border-r border-gray-300 w-24 md:w-32 text-sm md:text-lg">이름</th>
+                    <th class="px-3 md:px-4 py-4 md:py-5 font-bold border-r border-gray-300 w-24 md:w-32 text-sm md:text-lg">배정 교실</th>
+                    <th class="px-3 md:px-4 py-4 md:py-5 font-bold border-r border-gray-300 w-28 md:w-40 text-sm md:text-lg">교과</th>
+                    <th class="px-3 md:px-4 py-4 md:py-5 font-bold text-sm md:text-lg">공동 사용자</th>
                 </tr>
             ` : `
                 <tr>
-                    <th class="px-4 py-5 font-bold border-r border-gray-300 w-32 text-lg">배정 교실</th>
-                    <th class="px-4 py-5 font-bold border-r border-gray-300 w-32 text-lg">이름</th>
-                    <th class="px-4 py-5 font-bold border-r border-gray-300 w-40 text-lg">교과</th>
-                    <th class="px-4 py-5 font-bold text-lg">공동 사용자</th>
+                    <th class="px-3 md:px-4 py-4 md:py-5 font-bold border-r border-gray-300 w-24 md:w-32 text-sm md:text-lg">배정 교실</th>
+                    <th class="px-3 md:px-4 py-4 md:py-5 font-bold border-r border-gray-300 w-24 md:w-32 text-sm md:text-lg">이름</th>
+                    <th class="px-3 md:px-4 py-4 md:py-5 font-bold border-r border-gray-300 w-28 md:w-40 text-sm md:text-lg">교과</th>
+                    <th class="px-3 md:px-4 py-4 md:py-5 font-bold text-sm md:text-lg">공동 사용자</th>
                 </tr>
             `;
 
             container.innerHTML = `
                 <div class="flex flex-col h-full w-full">
-                    <div class="flex justify-center mb-6">
+                    <div class="flex justify-center mb-5 md:mb-6">
                         <div class="flex space-x-2 p-1.5 rounded-full border border-gray-200 bg-white shadow-sm">
-                            <button onclick="setSubTab('room')" class="${!isTeacherView ? 'sub-tab-active' : 'sub-tab-inactive'} px-8 py-3 text-lg font-bold rounded-full transition-all border border-transparent">교실별</button>
-                            <button onclick="setSubTab('teacher')" class="${isTeacherView ? 'sub-tab-active' : 'sub-tab-inactive'} px-8 py-3 text-lg font-bold rounded-full transition-all border border-transparent">교사별</button>
+                            <button onclick="setSubTab('room')" class="${!isTeacherView ? 'sub-tab-active' : 'sub-tab-inactive'} px-6 md:px-8 py-2.5 md:py-3 text-base md:text-lg font-bold rounded-full transition-all border border-transparent">교실별</button>
+                            <button onclick="setSubTab('teacher')" class="${isTeacherView ? 'sub-tab-active' : 'sub-tab-inactive'} px-6 md:px-8 py-2.5 md:py-3 text-base md:text-lg font-bold rounded-full transition-all border border-transparent">교사별</button>
                         </div>
                     </div>
                     
                     <div class="overflow-x-auto rounded-xl shadow-sm border border-gray-300 bg-white">
-                        <table class="w-full text-lg text-center table-fixed min-w-[700px]">
-                            <thead class="text-lg text-gray-800 bg-gray-200 border-b-2 border-gray-300">
+                        <table class="w-full text-center table-fixed min-w-[600px] md:min-w-[700px]">
+                            <thead class="text-gray-800 bg-gray-200 border-b-2 border-gray-300">
                                 ${headerHTML}
                             </thead>
                             <tbody>${tableRows}</tbody>
@@ -514,40 +536,45 @@
             let tableRows = '';
             
             ['1교시','2교시','3교시','4교시','5교시','6교시','7교시'].forEach(period => {
-                tableRows += `<tr class="border-b border-gray-200 hover:bg-gray-50"><th class="px-4 py-6 font-bold text-gray-900 bg-gray-100 border-r border-gray-200 whitespace-nowrap text-xl">${period.replace('교시','')}</th>`;
+                tableRows += `<tr class="border-b border-gray-200 hover:bg-gray-50"><th class="px-3 md:px-4 py-4 md:py-6 font-bold text-gray-900 bg-gray-100 border-r border-gray-200 whitespace-nowrap text-base md:text-xl">${period.replace('교시','')}</th>`;
                 ['월','화','수','목','금'].forEach(day => {
                     const rooms = data[period]?.[day] || [];
                     let roomText = '-';
                     if (rooms.length > 0) {
-                        // 순수 데이터로만 출력하도록 수정
-                        roomText = rooms.join(', ');
+                        // 빈 교실에도 색상 적용. 목요일 특정 교시에 해당하는 반은 보라색.
+                        roomText = rooms.map(r => {
+                            let isPurple = false;
+                            if (state.subTab === 'grade2' && day === '목' && (period === '3교시' || period === '4교시') && ['5','6','8'].includes(r)) isPurple = true;
+                            if (state.subTab === 'grade3' && day === '목' && (period === '1교시' || period === '2교시') && ['1','3','7'].includes(r)) isPurple = true;
+                            return isPurple ? `<span class="text-purple-700 font-bold">${r}</span>` : r;
+                        }).join(', ');
                     } else {
                         roomText = '';
                     }
-                    tableRows += `<td class="px-4 py-6 text-gray-800 text-xl border-r border-gray-100 last:border-0">${roomText}</td>`;
+                    tableRows += `<td class="px-2 md:px-4 py-4 md:py-6 text-gray-800 text-base md:text-xl border-r border-gray-100 last:border-0">${roomText}</td>`;
                 });
                 tableRows += `</tr>`;
             });
 
             container.innerHTML = `
                 <div class="flex flex-col h-full w-full max-w-5xl mx-auto">
-                    <div class="flex justify-center mb-6">
+                    <div class="flex justify-center mb-5 md:mb-6">
                         <div class="flex space-x-2 p-1.5 rounded-full border border-gray-200 bg-white shadow-sm">
-                            <button onclick="setSubTab('grade2')" class="${state.subTab !== 'grade3' ? 'sub-tab-active' : 'sub-tab-inactive'} px-8 py-3 text-lg font-bold rounded-full transition-all border border-transparent">2학년</button>
-                            <button onclick="setSubTab('grade3')" class="${state.subTab === 'grade3' ? 'sub-tab-active' : 'sub-tab-inactive'} px-8 py-3 text-lg font-bold rounded-full transition-all border border-transparent">3학년</button>
+                            <button onclick="setSubTab('grade2')" class="${state.subTab !== 'grade3' ? 'sub-tab-active' : 'sub-tab-inactive'} px-6 md:px-8 py-2.5 md:py-3 text-base md:text-lg font-bold rounded-full transition-all border border-transparent">2학년</button>
+                            <button onclick="setSubTab('grade3')" class="${state.subTab === 'grade3' ? 'sub-tab-active' : 'sub-tab-inactive'} px-6 md:px-8 py-2.5 md:py-3 text-base md:text-lg font-bold rounded-full transition-all border border-transparent">3학년</button>
                         </div>
                     </div>
                     
                     <div class="overflow-x-auto rounded-xl shadow-sm border border-gray-300 bg-white">
-                        <table class="w-full text-center table-fixed">
-                            <thead class="text-xl text-gray-800 bg-gray-200 border-b-2 border-gray-300">
+                        <table class="w-full text-center table-fixed min-w-[500px]">
+                            <thead class="text-base md:text-xl text-gray-800 bg-gray-200 border-b-2 border-gray-300">
                                 <tr>
-                                    <th class="px-4 py-5 font-bold w-20 border-r border-gray-300 bg-gray-100"></th>
-                                    <th class="px-4 py-5 font-bold text-gray-800 border-r border-gray-300 w-[18%]">월</th>
-                                    <th class="px-4 py-5 font-bold text-gray-800 border-r border-gray-300 w-[18%]">화</th>
-                                    <th class="px-4 py-5 font-bold text-gray-800 border-r border-gray-300 w-[18%]">수</th>
-                                    <th class="px-4 py-5 font-bold text-gray-800 border-r border-gray-300 w-[18%]">목</th>
-                                    <th class="px-4 py-5 font-bold text-gray-800 w-[18%]">금</th>
+                                    <th class="px-2 md:px-4 py-3 md:py-5 font-bold w-12 md:w-20 border-r border-gray-300 bg-gray-100"></th>
+                                    <th class="px-2 md:px-4 py-3 md:py-5 font-bold text-gray-800 border-r border-gray-300 w-[18%]">월</th>
+                                    <th class="px-2 md:px-4 py-3 md:py-5 font-bold text-gray-800 border-r border-gray-300 w-[18%]">화</th>
+                                    <th class="px-2 md:px-4 py-3 md:py-5 font-bold text-gray-800 border-r border-gray-300 w-[18%]">수</th>
+                                    <th class="px-2 md:px-4 py-3 md:py-5 font-bold text-gray-800 border-r border-gray-300 w-[18%]">목</th>
+                                    <th class="px-2 md:px-4 py-3 md:py-5 font-bold text-gray-800 w-[18%]">금</th>
                                 </tr>
                             </thead>
                             <tbody>${tableRows}</tbody>
@@ -562,49 +589,49 @@
         function renderOverlapTab(container) {
             const weekDates = getWeekRange(state.selectedDate);
             const html = `
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 flex items-center">교실 중복 현황</h2>
-                    <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200 shadow-sm">
-                        <label class="text-lg font-bold text-gray-700">날짜 선택:</label>
-                        <input type="date" id="date-picker" value="${state.selectedDate}" onchange="changeDate(event)" class="bg-white border border-gray-300 rounded-lg p-2.5 cursor-pointer shadow-sm text-lg font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 md:mb-6 gap-4">
+                    <h2 class="text-2xl md:text-4xl font-bold text-gray-800 flex items-center">교실 중복 현황</h2>
+                    <div class="flex items-center space-x-3 bg-gray-50 p-2 md:p-3 rounded-xl border border-gray-200 shadow-sm w-full md:w-auto">
+                        <label class="text-sm md:text-lg font-bold text-gray-700 whitespace-nowrap">날짜 선택:</label>
+                        <input type="date" id="date-picker" value="${state.selectedDate}" onchange="changeDate(event)" class="bg-white border border-gray-300 rounded-lg p-2 md:p-2.5 cursor-pointer shadow-sm text-sm md:text-lg font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary w-full md:w-auto">
                     </div>
                 </div>
                 
-                <div class="bg-blue-50/50 border border-blue-200 rounded-xl p-6 shadow-sm mb-8 flex flex-col gap-4">
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-5">
-                        <div class="col-span-2 md:col-span-1"><label class="block text-base font-bold text-gray-600 mb-2">시간 이동 교사</label><input type="text" id="overlap-name" placeholder="이름" class="w-full bg-white border border-gray-300 p-3 rounded-lg text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
-                        <div><label class="block text-base font-bold text-gray-600 mb-2">학반</label><input type="text" id="overlap-class" placeholder="예: 2-3" class="w-full bg-white border border-gray-300 p-3 rounded-lg text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
-                        <div><label class="block text-base font-bold text-gray-600 mb-2">교시</label><input type="text" id="overlap-period" placeholder="숫자" class="w-full bg-white border border-gray-300 p-3 rounded-lg text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
-                        <div class="col-span-2 md:col-span-1"><label class="block text-base font-bold text-gray-600 mb-2">중복 교사</label><input type="text" id="overlap-dup" placeholder="이름" class="w-full bg-white border border-gray-300 p-3 rounded-lg text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
-                        <div class="col-span-2 md:col-span-1 w-1/2"><label class="block text-base font-bold text-gray-600 mb-2">비고</label><input type="text" id="overlap-note" placeholder="내용" class="w-full bg-white border border-gray-300 p-3 rounded-lg text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                <div class="bg-blue-50/50 border border-blue-200 rounded-xl p-4 md:p-6 shadow-sm mb-6 md:mb-8 flex flex-col gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-5">
+                        <div class="col-span-2 md:col-span-1"><label class="block text-sm md:text-base font-bold text-gray-600 mb-1.5 md:mb-2">시간 이동 교사</label><input type="text" id="overlap-name" placeholder="이름" class="w-full bg-white border border-gray-300 p-2.5 md:p-3 rounded-lg text-base md:text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                        <div><label class="block text-sm md:text-base font-bold text-gray-600 mb-1.5 md:mb-2">학반</label><input type="text" id="overlap-class" placeholder="예: 2-3" class="w-full bg-white border border-gray-300 p-2.5 md:p-3 rounded-lg text-base md:text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                        <div><label class="block text-sm md:text-base font-bold text-gray-600 mb-1.5 md:mb-2">교시</label><input type="text" id="overlap-period" placeholder="숫자" class="w-full bg-white border border-gray-300 p-2.5 md:p-3 rounded-lg text-base md:text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                        <div class="col-span-2 md:col-span-1"><label class="block text-sm md:text-base font-bold text-gray-600 mb-1.5 md:mb-2">중복 교사</label><input type="text" id="overlap-dup" placeholder="이름" class="w-full bg-white border border-gray-300 p-2.5 md:p-3 rounded-lg text-base md:text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                        <div class="col-span-2 md:col-span-1 w-full"><label class="block text-sm md:text-base font-bold text-gray-600 mb-1.5 md:mb-2">비고</label><input type="text" id="overlap-note" placeholder="내용" class="w-full bg-white border border-gray-300 p-2.5 md:p-3 rounded-lg text-base md:text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
                     </div>
-                    <div class="flex justify-end space-x-3 mt-3">
-                        <button onclick="clearOverlapInputs()" class="bg-white border border-gray-300 hover:bg-gray-100 font-bold py-2.5 px-8 rounded-lg text-lg transition-colors text-gray-700 shadow-sm">비우기</button>
-                        <button onclick="addOverlapRecord()" class="bg-primary hover:bg-blue-800 text-white font-bold py-2.5 px-10 rounded-lg text-lg shadow-sm transition-colors">추가하기</button>
+                    <div class="flex justify-end space-x-3 mt-2 md:mt-3">
+                        <button onclick="clearOverlapInputs()" class="bg-white border border-gray-300 hover:bg-gray-100 font-bold py-2 md:py-2.5 px-6 md:px-8 rounded-lg text-base md:text-lg transition-colors text-gray-700 shadow-sm">비우기</button>
+                        <button onclick="addOverlapRecord()" class="bg-primary hover:bg-blue-800 text-white font-bold py-2 md:py-2.5 px-8 md:px-10 rounded-lg text-base md:text-lg shadow-sm transition-colors">추가하기</button>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-end mb-4">
-                    <h3 class="font-bold text-primary text-2xl flex items-center">
-                        <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <div class="flex justify-between items-end mb-3 md:mb-4">
+                    <h3 class="font-bold text-primary text-xl md:text-2xl flex items-center">
+                        <svg class="w-6 h-6 md:w-7 md:h-7 mr-1.5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         주간 현황 (${formatDate(weekDates[0])} ~ ${formatDate(weekDates[4])})
                     </h3>
                 </div>
                 
-                <div class="overflow-x-auto bg-white border border-gray-300 rounded-xl flex-grow shadow-sm mb-8">
-                    <table class="w-full text-lg text-center text-gray-700 min-w-[1100px] table-fixed">
-                        <thead class="text-lg text-gray-800 bg-gray-200 border-b-2 border-gray-300">
+                <div class="overflow-x-auto bg-white border border-gray-300 rounded-xl flex-grow shadow-sm mb-6 md:mb-8">
+                    <table class="w-full text-base md:text-lg text-center text-gray-700 min-w-[900px] md:min-w-[1100px] table-fixed">
+                        <thead class="text-gray-800 bg-gray-200 border-b-2 border-gray-300">
                             <tr>
-                                <th class="px-3 py-5 font-bold w-28">날짜</th>
-                                <th class="px-3 py-5 font-bold border-l border-gray-300 w-32">시간 이동 교사</th>
-                                <th class="px-2 py-5 font-bold border-l border-gray-300 w-24">학반</th>
-                                <th class="px-2 py-5 font-bold border-l border-gray-300 w-20">교시</th>
-                                <th class="px-3 py-5 font-bold border-l border-gray-300 w-28">중복 교사</th>
-                                <th class="px-3 py-5 font-bold border-l border-gray-300 w-48">비고</th>
-                                <th class="px-2 py-5 font-bold border-l border-gray-300 w-20">삭제</th>
-                                <th class="px-3 py-5 font-bold border-l-2 border-yellow-400 bg-yellow-50 text-yellow-900 w-36">이동할 교실</th>
-                                <th class="px-2 py-5 font-bold border-l border-yellow-400 bg-yellow-50 text-yellow-900 w-24">학생 안내</th>
-                                <th class="px-2 py-5 font-bold border-l border-yellow-400 bg-yellow-50 text-yellow-900 w-28">확인</th>
+                                <th class="px-2 md:px-3 py-4 md:py-5 font-bold w-20 md:w-28">날짜</th>
+                                <th class="px-2 md:px-3 py-4 md:py-5 font-bold border-l border-gray-300 w-28 md:w-32">시간 이동 교사</th>
+                                <th class="px-1 md:px-2 py-4 md:py-5 font-bold border-l border-gray-300 w-16 md:w-24">학반</th>
+                                <th class="px-1 md:px-2 py-4 md:py-5 font-bold border-l border-gray-300 w-16 md:w-20">교시</th>
+                                <th class="px-2 md:px-3 py-4 md:py-5 font-bold border-l border-gray-300 w-24 md:w-28">중복 교사</th>
+                                <th class="px-2 md:px-3 py-4 md:py-5 font-bold border-l border-gray-300 w-32 md:w-48">비고</th>
+                                <th class="px-1 md:px-2 py-4 md:py-5 font-bold border-l border-gray-300 w-16 md:w-20">삭제</th>
+                                <th class="px-2 md:px-3 py-4 md:py-5 font-bold border-l-2 border-yellow-400 bg-yellow-50 text-yellow-900 w-28 md:w-36">이동할 교실</th>
+                                <th class="px-1 md:px-2 py-4 md:py-5 font-bold border-l border-yellow-400 bg-yellow-50 text-yellow-900 w-20 md:w-24">학생 안내</th>
+                                <th class="px-1 md:px-2 py-4 md:py-5 font-bold border-l border-yellow-400 bg-yellow-50 text-yellow-900 w-20 md:w-28">확인</th>
                             </tr>
                         </thead>
                         <tbody id="overlap-tbody"></tbody>
@@ -619,7 +646,7 @@
         /* STREAMING_CHUNK:Handling overlap record actions and updating term display on date change... */
         function changeDate(e) { 
             state.selectedDate = e.target.value; 
-            updateAcademicTermDisplay(); // 날짜가 바뀌면 학기 표시도 즉시 업데이트
+            updateAcademicTermDisplay(); 
             renderContent(); 
         }
         function clearOverlapInputs() { ['name','class','period','dup','note'].forEach(id => document.getElementById(`overlap-${id}`).value = ""); }
@@ -668,25 +695,25 @@
             tbody.innerHTML = currentRecs.length ? currentRecs.map(r => {
                 const isSaved = r.saved;
                 return `<tr class="border-b border-gray-200 hover:bg-gray-50 bg-white">
-                    <td class="px-3 py-4 font-medium bg-gray-50/50 border-r border-gray-200 text-gray-600 text-lg">${formatDate(r.date)}</td>
-                    <td class="px-3 py-4 font-bold text-gray-900 border-r border-gray-100 text-lg">${r.name}</td>
-                    <td class="px-2 py-4 border-r border-gray-100 text-gray-700 text-lg">${r.gradeClass || '-'}</td>
-                    <td class="px-2 py-4 border-r border-gray-100 font-bold text-primary text-lg">${r.period}</td>
-                    <td class="px-3 py-4 border-r border-gray-100 text-gray-700 text-lg">${r.dupTeacher || '-'}</td>
-                    <td class="px-3 py-4 text-base text-gray-600 text-left">${r.note || '-'}</td>
-                    <td class="px-2 py-4 border-l border-gray-200">
-                        <button onclick="deleteOverlapRecord(${r.id})" class="text-base bg-white text-red-500 hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md font-bold border border-red-200 transition-colors shadow-sm w-full">삭제</button>
+                    <td class="px-2 md:px-3 py-3 md:py-4 font-medium bg-gray-50/50 border-r border-gray-200 text-gray-600 text-sm md:text-lg">${formatDate(r.date)}</td>
+                    <td class="px-2 md:px-3 py-3 md:py-4 font-bold text-gray-900 border-r border-gray-100 text-sm md:text-lg">${r.name}</td>
+                    <td class="px-1 md:px-2 py-3 md:py-4 border-r border-gray-100 text-gray-700 text-sm md:text-lg">${r.gradeClass || '-'}</td>
+                    <td class="px-1 md:px-2 py-3 md:py-4 border-r border-gray-100 font-bold text-primary text-sm md:text-lg">${r.period}</td>
+                    <td class="px-2 md:px-3 py-3 md:py-4 border-r border-gray-100 text-gray-700 text-sm md:text-lg">${r.dupTeacher || '-'}</td>
+                    <td class="px-2 md:px-3 py-3 md:py-4 text-xs md:text-base text-gray-600 text-left">${r.note || '-'}</td>
+                    <td class="px-1 md:px-2 py-3 md:py-4 border-l border-gray-200">
+                        <button onclick="deleteOverlapRecord(${r.id})" class="text-xs md:text-base bg-white text-red-500 hover:bg-red-50 hover:text-red-600 px-2 md:px-3 py-1.5 md:py-2 rounded-md font-bold border border-red-200 transition-colors shadow-sm w-full">삭제</button>
                     </td>
                     ${isSaved 
-                        ? `<td class="px-3 py-4 border-l-2 border-yellow-400 bg-yellow-50/50 font-bold text-yellow-900 text-xl">${r.moveRoom || '-'}</td>
-                           <td class="px-2 py-4 border-l border-yellow-200 bg-yellow-50/50">${r.studentNotice ? '<span class="text-green-700 font-bold bg-green-100 border border-green-200 px-3 py-1.5 rounded-md text-base shadow-sm">완료 ✅</span>' : '<span class="text-gray-400 text-base font-medium">미완료</span>'}</td>
-                           <td class="px-2 py-4 border-l border-yellow-200 bg-yellow-50/50"><button onclick="editMoveInfo(${r.id})" class="text-base bg-white hover:bg-gray-100 text-gray-700 px-5 py-2 rounded-md font-bold border border-gray-300 w-full transition-colors shadow-sm">수정</button></td>`
-                        : `<td class="px-2 py-3 border-l-2 border-yellow-400 bg-yellow-100/50"><input type="text" id="move-room-${r.id}" value="${r.moveRoom}" placeholder="교실 입력" class="w-full bg-white border border-yellow-400 p-2.5 text-center rounded-md text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-inner font-bold text-gray-800"></td>
-                           <td class="px-2 py-3 border-l border-yellow-300 bg-yellow-100/50"><input type="checkbox" id="move-notice-${r.id}" ${r.studentNotice?'checked':''} class="w-6 h-6 cursor-pointer accent-primary align-middle mt-1 rounded"></td>
-                           <td class="px-2 py-3 border-l border-yellow-300 bg-yellow-100/50"><button onclick="saveMoveInfo(${r.id})" class="text-base bg-primary hover:bg-blue-800 text-white px-5 py-2.5 rounded-md font-bold w-full transition-colors shadow-sm">저장</button></td>`
+                        ? `<td class="px-2 md:px-3 py-3 md:py-4 border-l-2 border-yellow-400 bg-yellow-50/50 font-bold text-yellow-900 text-base md:text-xl">${r.moveRoom || '-'}</td>
+                           <td class="px-1 md:px-2 py-3 md:py-4 border-l border-yellow-200 bg-yellow-50/50">${r.studentNotice ? '<span class="text-green-700 font-bold bg-green-100 border border-green-200 px-2 md:px-3 py-1 md:py-1.5 rounded-md text-xs md:text-base shadow-sm">완료 ✅</span>' : '<span class="text-gray-400 text-xs md:text-base font-medium">미완료</span>'}</td>
+                           <td class="px-1 md:px-2 py-3 md:py-4 border-l border-yellow-200 bg-yellow-50/50"><button onclick="editMoveInfo(${r.id})" class="text-xs md:text-base bg-white hover:bg-gray-100 text-gray-700 px-3 md:px-5 py-1.5 md:py-2 rounded-md font-bold border border-gray-300 w-full transition-colors shadow-sm">수정</button></td>`
+                        : `<td class="px-1 md:px-2 py-2 md:py-3 border-l-2 border-yellow-400 bg-yellow-100/50"><input type="text" id="move-room-${r.id}" value="${r.moveRoom}" placeholder="교실 입력" class="w-full bg-white border border-yellow-400 p-1.5 md:p-2.5 text-center rounded-md text-sm md:text-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-inner font-bold text-gray-800"></td>
+                           <td class="px-1 md:px-2 py-2 md:py-3 border-l border-yellow-300 bg-yellow-100/50"><input type="checkbox" id="move-notice-${r.id}" ${r.studentNotice?'checked':''} class="w-5 h-5 md:w-6 md:h-6 cursor-pointer accent-primary align-middle mt-1 rounded"></td>
+                           <td class="px-1 md:px-2 py-2 md:py-3 border-l border-yellow-300 bg-yellow-100/50"><button onclick="saveMoveInfo(${r.id})" class="text-xs md:text-base bg-primary hover:bg-blue-800 text-white px-3 md:px-5 py-1.5 md:py-2.5 rounded-md font-bold w-full transition-colors shadow-sm">저장</button></td>`
                     }
                 </tr>`;
-            }).join('') : `<tr><td colspan="10" class="px-6 py-20 text-center text-gray-400 font-medium bg-gray-50/30 text-lg">선택한 주간에 등록된 현황이 없습니다.</td></tr>`;
+            }).join('') : `<tr><td colspan="10" class="px-6 py-16 md:py-20 text-center text-gray-400 font-medium bg-gray-50/30 text-base md:text-lg">선택한 주간에 등록된 현황이 없습니다.</td></tr>`;
         }
 
         /* STREAMING_CHUNK:Implementing admin and Excel file upload functions... */
