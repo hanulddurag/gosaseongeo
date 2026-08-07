@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026학년도 2학기 교과 교실 사용 안내</title>
+    <title>2026학년도 2학기 교과 교실 운영 현황</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -26,34 +26,39 @@
 </head>
 <body class="text-gray-800 antialiased min-h-screen p-4 md:p-8">
 
-    <div id="app" class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col">
+    <div id="app" class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col min-h-[90vh]">
         <!-- Header -->
-        <header class="bg-primary text-white p-6 shadow-md relative z-10 flex items-start justify-center">
-            <div class="absolute left-6 top-6 mt-1 flex flex-row text-sm font-medium text-blue-200 space-x-1">
-                <span class="leading-none">2026학년도</span>
-                <span class="leading-none">2학기</span>
+        <header class="bg-primary text-white p-6 shadow-md relative z-10 flex items-center justify-center">
+            <!-- 2026학년도 2학기 (Left Aligned, Upper aligned with main title) -->
+            <div class="absolute left-6 md:left-10 flex space-x-2 text-sm md:text-base font-medium text-blue-200" style="top: 1.75rem;">
+                <span>2026학년도</span>
+                <span>2학기</span>
             </div>
-            <h1 class="text-4xl font-bold tracking-tight text-center leading-none">교과 교실 사용 안내</h1>
+            <!-- Main Title (Center Aligned, Larger) -->
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-center">교과 교실 운영 현황</h1>
         </header>
 
         <!-- Main Navigation -->
-        <div class="flex justify-center items-center gap-6 border-b border-gray-200 bg-gray-50 py-4 px-6">
-            <button onclick="setMainTab('assignment')" id="tab-assignment" class="tab-btn px-8 py-3 text-xl font-bold rounded-xl border-2 transition-all shadow-sm">
+        <div class="flex flex-wrap justify-center items-center gap-4 md:gap-8 border-b border-gray-200 bg-gray-50 py-4 px-6">
+            <button onclick="setMainTab('overlap')" id="tab-overlap" class="tab-btn px-6 md:px-8 py-3 text-lg md:text-xl font-bold rounded-xl border-2 transition-all shadow-sm">
+                교과 교실 중복 현황
+            </button>
+            <button onclick="setMainTab('assignment')" id="tab-assignment" class="tab-btn px-6 md:px-8 py-3 text-lg md:text-xl font-bold rounded-xl border-2 transition-all shadow-sm">
                 교실 배정 현황
             </button>
-            <button onclick="setMainTab('empty')" id="tab-empty" class="tab-btn px-8 py-3 text-xl font-bold rounded-xl border-2 transition-all shadow-sm">
+            <button onclick="setMainTab('empty')" id="tab-empty" class="tab-btn px-6 md:px-8 py-3 text-lg md:text-xl font-bold rounded-xl border-2 transition-all shadow-sm">
                 공강 교실 현황
             </button>
         </div>
 
         <!-- Content Area -->
-        <div id="content-container" class="flex-grow bg-white relative">
+        <div id="content-container" class="flex-grow bg-white relative flex flex-col">
             <!-- Dynamic Content Injected Here -->
         </div>
     </div>
 
     <script>
-        // Data
+        // --- REAL DATA RESTORED ---
         const assignmentData = [
             { room: "2-1", name: "김희수", subject: "도덕", coUser: "" },
             { room: "2-2", name: "권현지", subject: "과학A", coUser: "<span class='text-blue-600'>박지은(1~4, 7~10)</span>, <span class='text-blue-600'>윤혜진(일본어 A, 목 5~7)</span>" },
@@ -114,9 +119,59 @@
             '7교시': { '월': [], '화': ['1','2','8','10'], '수': [], '목': ['2','5','8','10'], '금': [] }
         };
 
+        // --- OVERLAP TAB STATE ---
+        let overlapRecords = []; // { id, date, name, period, dupTeacher, note, moveRoom, studentNotice, saved }
+
+        // --- 날짜 유틸리티 함수 ---
+        function getTodayString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function changeSelectedDate(newDate) {
+            state.selectedDate = newDate;
+            renderContent();
+        }
+
+        function getWeekRange(dateStr) {
+            const d = new Date(dateStr);
+            const day = d.getDay();
+            const diffToMonday = d.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(d);
+            monday.setDate(diffToMonday);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            return { start: monday, end: sunday };
+        }
+
+        function isSameWeek(dateStr1, dateStr2) {
+            const range1 = getWeekRange(dateStr1);
+            const range2 = getWeekRange(dateStr2);
+            return range1.start.getTime() === range2.start.getTime();
+        }
+
+        function formatDateShort(dateString) {
+            const d = new Date(dateString);
+            const days = ['일', '월', '화', '수', '목', '금', '토'];
+            return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}(${days[d.getDay()]})`;
+        }
+
+        function getWeekDisplayStr(dateStr) {
+            const range = getWeekRange(dateStr);
+            const friday = new Date(range.start);
+            friday.setDate(range.start.getDate() + 4);
+            const format = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
+            return `${format(range.start)} ~ ${format(friday)}`;
+        }
+
+        // --- APP STATE ---
         let state = {
-            mainTab: 'assignment',
-            subTab: 'room'
+            mainTab: 'overlap',
+            subTab: 'room', // 'room', 'teacher', 'grade2', 'grade3'
+            selectedDate: getTodayString()
         };
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -139,7 +194,7 @@
         }
 
         function renderTabs() {
-            const tabs = ['assignment', 'empty'];
+            const tabs = ['overlap', 'assignment', 'empty'];
             tabs.forEach(tab => {
                 const el = document.getElementById(`tab-${tab}`);
                 if (state.mainTab === tab) {
@@ -168,11 +223,233 @@
             const container = document.getElementById('content-container');
             container.innerHTML = '';
 
-            if (state.mainTab === 'assignment') renderAssignmentTab(container);
+            if (state.mainTab === 'overlap') renderOverlapTab(container);
+            else if (state.mainTab === 'assignment') renderAssignmentTab(container);
             else if (state.mainTab === 'empty') renderEmptyRoomTab(container);
         }
 
-        // Custom comparator to ensure 2-10 comes after 2-9 and 3-10 comes after 3-9
+        function getNoticeHTML() {
+            return `
+                <div class="mt-auto bg-blue-50 border-t-2 border-blue-200 p-6 text-base text-gray-800 shadow-inner w-full">
+                    <h3 class="font-bold text-lg text-primary mb-4 flex items-center max-w-7xl mx-auto">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        안내 사항
+                    </h3>
+                    <div class="max-w-7xl mx-auto">
+                        <ol class="list-decimal pl-5 space-y-2 font-medium">
+                            <li>시간 이동 교사는 교과 교실 중복 내용을 확인하고 이동할 교실을 입력한 후 학생들에게 안내한다.</li>
+                            <li>공강 교실이라도 해당 교실의 수업 교사도 시간 이동이 될 수 있으니 컴시간 알리미를 통해 해당 교실에 수업이 없는지 확인한다.</li>
+                            <li><strong>월요일 3학년 2~3교시 교양 선택, 목요일 2학년 5~7교시 생활외국어</strong>로 고정된 시간입니다.</li>
+                            <li>스포츠(목요일 3학년 1~2교시, 2학년 3~4교시)는 우천 시에만 사용하고 평소에는 다른 교과가 사용 가능합니다.</li>
+                            <li>문의 사항이 있으시면 정영자(764번)에게 연락주시기 바랍니다.</li>
+                        </ol>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderOverlapTab(container) {
+            let html = `
+                <div class="p-6 flex-grow flex flex-col items-center w-full">
+                    
+                    <!-- 제목 및 달력 -->
+                    <div class="w-full max-w-7xl flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+                        <div class="flex items-center space-x-4">
+                            <h2 class="text-2xl font-bold text-gray-800">교과 교실 중복 및 이동</h2>
+                            <input type="date" id="overlap-date-picker" value="${state.selectedDate}" onchange="changeSelectedDate(this.value)" class="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-primary text-gray-700 font-bold cursor-pointer shadow-sm text-sm bg-white">
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="text-sm font-bold text-primary bg-blue-50 px-4 py-2 rounded-lg border border-blue-200 shadow-sm">
+                                해당 주간: ${getWeekDisplayStr(state.selectedDate)}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 입력 폼 -->
+                    <div class="w-full max-w-7xl bg-gray-50 border border-gray-300 rounded-xl p-4 mb-8 shadow-sm flex flex-wrap gap-4 items-end">
+                        <div class="flex flex-col">
+                            <label class="text-sm font-bold text-gray-600 mb-1">시간 이동 교사</label>
+                            <input type="text" id="overlap-name-input" placeholder="이름" class="border border-gray-300 rounded-lg p-2 w-32 focus:outline-none focus:border-primary">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-sm font-bold text-gray-600 mb-1">학반</label>
+                            <input type="text" id="overlap-class-input" placeholder="예: 2-1" class="border border-gray-300 rounded-lg p-2 w-20 focus:outline-none focus:border-primary">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-sm font-bold text-gray-600 mb-1">교시</label>
+                            <input type="text" id="overlap-period-input" placeholder="예: 월 3" class="border border-gray-300 rounded-lg p-2 w-24 focus:outline-none focus:border-primary">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-sm font-bold text-gray-600 mb-1">중복 교사</label>
+                            <input type="text" id="overlap-dup-input" placeholder="이름" class="border border-gray-300 rounded-lg p-2 w-32 focus:outline-none focus:border-primary">
+                        </div>
+                        <div class="flex flex-col flex-grow">
+                            <label class="text-sm font-bold text-gray-600 mb-1">비고 (사유 등)</label>
+                            <input type="text" id="overlap-note-input" placeholder="비고 입력" class="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-primary">
+                        </div>
+                        <button onclick="clearOverlapInputs()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-sm h-[42px]">
+                            비우기
+                        </button>
+                        <button onclick="addOverlapRecord()" class="bg-primary hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-sm h-[42px]">
+                            추가
+                        </button>
+                    </div>
+
+                    <!-- 통합 현황 표 -->
+                    <div class="w-full max-w-7xl overflow-x-auto rounded-xl border border-gray-300 shadow-sm mb-8">
+                        <table class="w-full text-base text-gray-700 min-w-max">
+                            <thead class="bg-gray-200 text-gray-700 border-b-2 border-gray-400">
+                                <tr>
+                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 w-28">날짜</th>
+                                    <th class="px-4 py-3 text-center font-bold border-r border-gray-300 w-32">시간 이동 교사</th>
+                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 w-20">학반</th>
+                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 w-20">교시</th>
+                                    <th class="px-4 py-3 text-center font-bold border-r border-gray-300 w-32">중복 교사</th>
+                                    <th class="px-4 py-3 text-center font-bold border-r border-gray-300">비고</th>
+                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 w-20 text-red-600">삭제</th>
+                                    <th class="px-4 py-3 text-center font-bold border-r border-gray-300 bg-yellow-100 w-40">이동할 교실</th>
+                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 bg-yellow-100 w-24">학생 안내</th>
+                                    <th class="px-3 py-3 text-center font-bold w-20 bg-yellow-100 text-blue-600">확인</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overlap-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Records will be injected here -->
+                            </tbody>
+                        </table>
+                        <div id="overlap-empty-msg" class="text-center p-8 text-gray-500 font-medium hidden">해당 주간에 등록된 중복 현황이 없습니다. 위에서 추가해 주세요.</div>
+                    </div>
+                </div>
+                ${getNoticeHTML()}
+            `;
+            container.innerHTML = html;
+            renderOverlapTableBody();
+        }
+
+        function addOverlapRecord() {
+            const name = document.getElementById('overlap-name-input').value.trim();
+            const gradeClass = document.getElementById('overlap-class-input').value.trim();
+            const period = document.getElementById('overlap-period-input').value.trim();
+            const dup = document.getElementById('overlap-dup-input').value.trim();
+            const note = document.getElementById('overlap-note-input').value.trim();
+
+            if (!name) {
+                alert('시간 이동 교사 이름을 입력해주세요.');
+                return;
+            }
+
+            const newRecord = {
+                id: Date.now(),
+                date: state.selectedDate, // 선택된 날짜 자동 저장
+                name: name,
+                gradeClass: gradeClass,
+                period: period,
+                dupTeacher: dup,
+                note: note,
+                moveRoom: '',
+                studentNotice: false, // 텍스트에서 체크박스용 boolean(참/거짓)으로 변경
+                saved: false
+            };
+
+            overlapRecords.push(newRecord);
+            renderOverlapTableBody();
+
+            // Clear inputs
+            clearOverlapInputs();
+        }
+
+        function clearOverlapInputs() {
+            document.getElementById('overlap-name-input').value = '';
+            document.getElementById('overlap-class-input').value = '';
+            document.getElementById('overlap-period-input').value = '';
+            document.getElementById('overlap-dup-input').value = '';
+            document.getElementById('overlap-note-input').value = '';
+        }
+
+        function deleteOverlapRecord(id) {
+            overlapRecords = overlapRecords.filter(r => r.id !== id);
+            renderContent();
+        }
+
+        function saveMoveInfo(id) {
+            const roomInput = document.getElementById(`move-room-${id}`).value;
+            const noticeInput = document.getElementById(`move-notice-${id}`).checked; // 텍스트 value 대신 체크 여부(checked) 확인
+            
+            const record = overlapRecords.find(r => r.id === id);
+            if(record) {
+                record.moveRoom = roomInput;
+                record.studentNotice = noticeInput;
+                record.saved = true;
+            }
+            renderOverlapTableBody();
+        }
+
+        function editMoveInfo(id) {
+            const record = overlapRecords.find(r => r.id === id);
+            if(record) {
+                record.saved = false;
+            }
+            renderOverlapTableBody();
+        }
+
+        function renderOverlapTableBody() {
+            const tbody = document.getElementById('overlap-table-body');
+            const emptyMsg = document.getElementById('overlap-empty-msg');
+            if(!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // 필터링: 선택된 날짜와 같은 주간(월~일)에 있는 기록들만 가져옴
+            const weeklyRecords = overlapRecords.filter(r => isSameWeek(r.date, state.selectedDate));
+            
+            // 정렬: 1순위 날짜순, 2순위 먼저 입력한 순
+            weeklyRecords.sort((a, b) => new Date(a.date) - new Date(b.date) || a.id - b.id);
+
+            if (weeklyRecords.length === 0) {
+                if(emptyMsg) emptyMsg.classList.remove('hidden');
+            } else {
+                if(emptyMsg) emptyMsg.classList.add('hidden');
+            }
+
+            weeklyRecords.forEach(record => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition-colors";
+                
+                let moveRoomCell = '';
+                let noticeCell = '';
+                let actionBtn = '';
+
+                if (record.saved) {
+                    moveRoomCell = `<td class="px-4 py-2 text-center font-bold text-blue-700 bg-yellow-50 border-r border-gray-200">${record.moveRoom || '-'}</td>`;
+                    noticeCell = `<td class="px-2 py-2 text-center bg-yellow-50 border-r border-gray-200">
+                        ${record.studentNotice ? '<span class="text-green-600 font-bold text-sm">완료✅</span>' : '<span class="text-gray-400 font-medium text-sm">미완료</span>'}
+                    </td>`;
+                    actionBtn = `<td class="px-2 py-2 text-center bg-yellow-50"><button onclick="editMoveInfo(${record.id})" class="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 bg-blue-100 rounded text-sm transition-colors w-full">수정</button></td>`;
+                } else {
+                    moveRoomCell = `<td class="px-2 py-2 text-center bg-yellow-50 border-r border-gray-200"><input type="text" id="move-room-${record.id}" value="${record.moveRoom}" placeholder="교실 입력" class="border border-gray-300 rounded p-1 w-full text-center focus:border-primary text-sm"></td>`;
+                    noticeCell = `<td class="px-2 py-2 text-center bg-yellow-50 border-r border-gray-200">
+                        <input type="checkbox" id="move-notice-${record.id}" ${record.studentNotice ? 'checked' : ''} class="w-5 h-5 cursor-pointer accent-blue-600 align-middle hover:scale-110 transition-transform">
+                    </td>`;
+                    actionBtn = `<td class="px-2 py-2 text-center bg-yellow-50"><button onclick="saveMoveInfo(${record.id})" class="text-green-700 hover:text-green-900 font-bold px-2 py-1 bg-green-200 rounded text-sm transition-colors w-full">저장</button></td>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="px-3 py-3 text-center border-r border-gray-200 bg-gray-50"><span class="text-sm font-bold text-gray-600">${formatDateShort(record.date)}</span></td>
+                    <td class="px-4 py-3 text-center font-medium border-r border-gray-200">${record.name}</td>
+                    <td class="px-3 py-3 text-center border-r border-gray-200">${record.gradeClass || ''}</td>
+                    <td class="px-3 py-3 text-center border-r border-gray-200">${record.period}</td>
+                    <td class="px-4 py-3 text-center border-r border-gray-200">${record.dupTeacher}</td>
+                    <td class="px-4 py-3 text-center border-r border-gray-200">${record.note}</td>
+                    <td class="px-2 py-3 text-center border-r border-gray-200">
+                        <button onclick="deleteOverlapRecord(${record.id})" class="text-red-500 hover:text-white hover:bg-red-500 font-bold px-2 py-1 border border-red-300 rounded text-sm transition-colors w-full">삭제</button>
+                    </td>
+                    ${moveRoomCell}
+                    ${noticeCell}
+                    ${actionBtn}
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         function compareRooms(a, b) {
             const parse = (r) => {
                 let match = r.match(/^(\d+)-(\d+)$/);
@@ -195,30 +472,33 @@
             }
 
             let html = `
-                <div class="p-6">
-                    <div class="flex justify-center space-x-4 mb-6">
-                        <button id="subtab-room" onclick="setSubTab('room')" class="sub-tab-btn px-6 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm">교실별</button>
-                        <button id="subtab-teacher" onclick="setSubTab('teacher')" class="sub-tab-btn px-6 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm">교사별</button>
+                <div class="p-6 flex-grow flex flex-col w-full items-center">
+                    <!-- 서브 탭 (가운데 정렬) -->
+                    <div class="flex justify-center space-x-4 mb-6 w-full max-w-7xl">
+                        <button id="subtab-room" onclick="setSubTab('room')" class="sub-tab-btn px-8 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm border-2">교실별</button>
+                        <button id="subtab-teacher" onclick="setSubTab('teacher')" class="sub-tab-btn px-8 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm border-2">교사별</button>
                     </div>
-                    <div class="flex justify-center">
-                        <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm w-full">
+
+                    <!-- 표 영역 -->
+                    <div class="w-full max-w-7xl">
+                        <div class="overflow-x-auto rounded-xl border border-gray-300 shadow-sm w-full">
                             <table class="text-base text-gray-700 min-w-max w-full">
-                                <thead class="text-sm bg-gray-100 text-gray-700 border-b-2 border-gray-300">
+                                <thead class="text-sm bg-gray-200 text-gray-800 border-b-2 border-gray-400">
                                     <tr>
             `;
             
             if (state.subTab === 'room') {
                 html += `
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap">배정 교실</th>
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap">이름</th>
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap">교과</th>
+                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-32">배정 교실</th>
+                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-32">이름</th>
+                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-40">교과</th>
                                         <th class="px-6 py-3 text-center font-bold whitespace-nowrap">공동 사용자</th>
                 `;
-            } else {
+            } else { // 교사별 탭 열 순서: 이름, 배정 교실, 교과, 공동 사용자 (모두 가운데 정렬)
                 html += `
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap">이름</th>
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap">배정 교실</th>
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap">교과</th>
+                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-32">이름</th>
+                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-32">배정 교실</th>
+                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-40">교과</th>
                                         <th class="px-6 py-3 text-center font-bold whitespace-nowrap">공동 사용자</th>
                 `;
             }
@@ -247,19 +527,20 @@
                     <tr class="${bgClass} border-b border-gray-200 hover:bg-yellow-50 transition-colors">
                 `;
                 
+                // All text-center applied
                 if (state.subTab === 'room') {
                     html += `
-                        <td class="px-4 py-2 text-center font-bold whitespace-nowrap">${row.room}</td>
-                        <td class="px-4 py-2 text-center font-medium whitespace-nowrap">${row.name}</td>
-                        <td class="px-4 py-2 text-center whitespace-nowrap">${row.subject}</td>
-                        <td class="px-6 py-2 text-center whitespace-nowrap">${row.coUser}</td>
+                        <td class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-200">${row.room}</td>
+                        <td class="px-4 py-3 text-center font-medium whitespace-nowrap border-r border-gray-200">${row.name}</td>
+                        <td class="px-4 py-3 text-center whitespace-nowrap border-r border-gray-200">${row.subject}</td>
+                        <td class="px-6 py-3 text-center whitespace-nowrap">${row.coUser}</td>
                     `;
                 } else {
                     html += `
-                        <td class="px-4 py-2 text-center font-medium whitespace-nowrap">${row.name}</td>
-                        <td class="px-4 py-2 text-center font-bold whitespace-nowrap">${row.room}</td>
-                        <td class="px-4 py-2 text-center whitespace-nowrap">${row.subject}</td>
-                        <td class="px-6 py-2 text-center whitespace-nowrap">${row.coUser}</td>
+                        <td class="px-4 py-3 text-center font-medium whitespace-nowrap border-r border-gray-200">${row.name}</td>
+                        <td class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-200">${row.room}</td>
+                        <td class="px-4 py-3 text-center whitespace-nowrap border-r border-gray-200">${row.subject}</td>
+                        <td class="px-6 py-3 text-center whitespace-nowrap">${row.coUser}</td>
                     `;
                 }
 
@@ -273,21 +554,8 @@
                             </table>
                         </div>
                     </div>
-                    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6 text-base text-gray-800 shadow-sm">
-                        <h3 class="font-bold text-base text-primary mb-3 flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            안내 사항
-                        </h3>
-                        <ul class="list-decimal list-outside ml-5 space-y-2 font-medium">
-                            <li>공동 사용자가 없거나 스포츠만 있는 교사와의 시간 변경은 교실 중복이 발생하지 않습니다.</li>
-                            <li>공동 사용자가 있을 경우 교실 중복이 발생할 수 있으니 <strong><a href="https://docs.google.com/spreadsheets/d/1yh6IFIUY3m8w4grOGKedwVk2Kp63oXOfApYzfV7o8QQ/edit?gid=0#gid=0" target="_blank" class="text-blue-700 underline hover:text-blue-900 font-bold">교과 교실 시간표</a></strong>에서 확인 후 진행 바랍니다.</li>
-                            <li><strong>월요일 3학년 2~3교시 교양 선택, 목요일 2학년 5~7교시 생활외국어</strong>로 고정된 시간입니다.</li>
-                            <li>스포츠(목요일 3학년 1~2교시, 2학년 3~4교시)는 우천 시에만 사용하고 평소에는 다른 교과가 사용 가능합니다.</li>
-                            <li>시간표가 변경된 사람이 빈 교실을 확인하여, 학생들에게 안내하고 수업을 진행하시기 바랍니다.</li>
-                            <li>문의 사항이 있으시면 정영자(764번)에게 연락주시기 바랍니다.</li>
-                        </ul>
-                    </div>
                 </div>
+                ${getNoticeHTML()}
             `;
             container.innerHTML = html;
             updateSubTabUI();
@@ -313,34 +581,36 @@
             const gradeNum = state.subTab === 'grade2' ? '2' : '3';
             
             let html = `
-                <div class="p-6">
-                    <div class="flex justify-center space-x-4 mb-6">
-                        <button id="subtab-grade2" onclick="setSubTab('grade2')" class="sub-tab-btn px-6 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm">2학년</button>
-                        <button id="subtab-grade3" onclick="setSubTab('grade3')" class="sub-tab-btn px-6 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm">3학년</button>
+                <div class="p-6 flex-grow flex flex-col w-full items-center">
+                    <!-- 서브 탭 (가운데 정렬) -->
+                    <div class="flex justify-center space-x-4 mb-6 w-full max-w-7xl">
+                        <button id="subtab-grade2" onclick="setSubTab('grade2')" class="sub-tab-btn px-8 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm border-2">2학년</button>
+                        <button id="subtab-grade3" onclick="setSubTab('grade3')" class="sub-tab-btn px-8 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm border-2">3학년</button>
                     </div>
 
-                    <div class="flex justify-center">
-                        <div class="overflow-x-auto rounded-xl border-2 border-gray-300 shadow-sm w-fit">
-                            <table class="text-base text-gray-700 divide-y-2 divide-gray-300">
-                                <thead class="bg-gray-100 text-gray-800 border-b-2 border-gray-400">
-                                    <tr class="divide-x-2 divide-gray-300">
-                                        <th class="px-5 py-4 w-auto text-center font-bold text-2xl"></th>
-                                        <th class="px-6 py-4 text-center font-bold text-2xl whitespace-nowrap">월</th>
-                                        <th class="px-6 py-4 text-center font-bold text-2xl whitespace-nowrap">화</th>
-                                        <th class="px-6 py-4 text-center font-bold text-2xl whitespace-nowrap">수</th>
-                                        <th class="px-6 py-4 text-center font-bold text-2xl whitespace-nowrap">목</th>
-                                        <th class="px-6 py-4 text-center font-bold text-2xl whitespace-nowrap">금</th>
+                    <div class="flex justify-center w-full max-w-7xl">
+                        <div class="overflow-x-auto rounded-xl border border-gray-300 shadow-sm w-full max-w-4xl">
+                            <table class="w-full text-base text-gray-700 border-collapse">
+                                <thead class="bg-gray-200 text-gray-800 border-b-2 border-gray-400">
+                                    <tr>
+                                        <th class="px-5 py-4 w-20 text-center font-bold text-xl border-r border-gray-300"></th>
+                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap border-r border-gray-300 w-1/5">월</th>
+                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap border-r border-gray-300 w-1/5">화</th>
+                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap border-r border-gray-300 w-1/5">수</th>
+                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap border-r border-gray-300 w-1/5">목</th>
+                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap w-1/5">금</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y-2 divide-gray-300 bg-white">
+                                <tbody class="bg-white">
             `;
 
             ['1교시', '2교시', '3교시', '4교시', '5교시', '6교시', '7교시'].forEach(period => {
                 let pNum = period.replace('교시', '');
-                html += `<tr class="hover:bg-gray-50 transition-colors divide-x-2 divide-gray-300">`;
-                html += `<td class="px-5 py-4 w-auto text-center font-bold text-2xl bg-gray-50 whitespace-nowrap">${pNum}</td>`;
-                ['월', '화', '수', '목', '금'].forEach(day => {
-                    html += `<td class="px-6 py-4 text-center font-medium text-lg whitespace-nowrap">${generateEmptyRoomCell(gradeNum, day, period, data)}</td>`;
+                html += `<tr class="hover:bg-gray-50 transition-colors border-b border-gray-200 last:border-0">`;
+                html += `<td class="px-5 py-4 text-center font-bold text-xl bg-gray-50 whitespace-nowrap border-r border-gray-200">${pNum}</td>`;
+                ['월', '화', '수', '목', '금'].forEach((day, idx) => {
+                    let borderClass = idx < 4 ? 'border-r border-gray-200' : '';
+                    html += `<td class="px-6 py-4 text-center font-medium text-lg whitespace-nowrap ${borderClass}">${generateEmptyRoomCell(gradeNum, day, period, data)}</td>`;
                 });
                 html += `</tr>`;
             });
@@ -350,7 +620,8 @@
                             </table>
                         </div>
                     </div>
-                    <div class="mt-8 bg-gray-50 border border-gray-200 rounded-xl p-5 text-base text-gray-700 shadow-sm flex flex-col md:flex-row gap-4 items-start">
+                    
+                    <div class="mt-8 bg-gray-50 border border-gray-300 rounded-xl p-5 text-base text-gray-700 shadow-sm flex flex-col md:flex-row gap-4 items-start w-full max-w-4xl">
                         <div class="text-primary font-bold whitespace-nowrap flex items-center">
                             <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             참고
@@ -361,6 +632,7 @@
                         </ul>
                     </div>
                 </div>
+                ${getNoticeHTML()}
             `;
             container.innerHTML = html;
             updateSubTabUI();
