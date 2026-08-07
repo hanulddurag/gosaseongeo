@@ -3,90 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026학년도 2학기 교과 교실 운영 현황</title>
+    <title>교과 교실 운영 현황</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- STREAMING_CHUNK:Loading XLSX library for Excel support... -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f3f4f6; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
-        .tab-btn { transition: all 0.2s ease-in-out; }
-    </style>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: '#1e40af', secondary: '#3b82f6' }
+                    fontFamily: { sans: ['"Noto Sans KR"', 'sans-serif'] },
+                    colors: { primary: '#283593', secondary: '#3f51b5', accent: '#ff9800' }
                 }
             }
         }
     </script>
+    <style>
+        /* STREAMING_CHUNK:Configuring default styles and custom CSS... */
+        body { background-color: #f3f4f6; }
+        
+        /* 탭 버튼 스타일링 */
+        .tab-btn { 
+            transition: all 0.2s ease-in-out; 
+        }
+        .tab-btn.active { 
+            border-color: #283593; 
+            color: white; 
+            background-color: #283593;
+            font-weight: bold; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 하위 탭(교실별/교사별) 활성화 스타일 */
+        .sub-tab-active {
+            background-color: #283593;
+            color: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-color: #283593;
+        }
+        .sub-tab-inactive {
+            background-color: white;
+            color: #4b5563;
+            border-color: #d1d5db;
+        }
+        .sub-tab-inactive:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* 안내 사항 줄바꿈 정렬 및 글자 겹침 수정 */
+        .indent-list {
+            padding-left: 1.25rem; 
+            list-style-position: outside; 
+            line-height: 1.8; 
+        }
+        .indent-list li {
+            margin-bottom: 0.75rem;
+            padding-left: 0.25rem;
+        }
+        
+        /* 커스텀 테이블 줄무늬 배경 (조금 더 따뜻하고 구별되는 연두색) */
+        .bg-group-green { background-color: #f0fdf4; } 
+    </style>
 </head>
-<body class="text-gray-800 antialiased min-h-screen p-4 md:p-8">
+<body class="text-gray-800 font-sans min-h-screen flex flex-col">
+    <!-- STREAMING_CHUNK:Building the header... -->
+    <header class="bg-white border-b border-gray-200 py-4">
+        <div class="max-w-[1400px] mx-auto px-4 w-full relative">
+            <div class="flex items-center justify-between gap-4 h-[3rem]">
+                <span class="text-[0.4em] md:text-[0.8rem] font-semibold text-gray-500 tracking-tight shrink-0">2026학년도 2학기</span>
+                
+                <h1 class="absolute left-1/2 -translate-x-1/2 text-2xl md:text-3xl tracking-tight leading-none text-primary font-bold whitespace-nowrap">
+                    교과 교실 운영 현황
+                </h1>
 
-    <div id="app" class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col min-h-[90vh]">
-        <!-- Header -->
-        <header class="bg-primary text-white p-6 shadow-md relative z-10 flex items-center justify-center">
-            <!-- 2026학년도 2학기 (Left Aligned, Upper aligned with main title) -->
-            <div class="absolute left-6 md:left-10 flex space-x-2 text-sm md:text-base font-medium text-blue-200" style="top: 1.75rem;">
-                <span>2026학년도</span>
-                <span>2학기</span>
+                <button onclick="toggleAdminModal()" class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-sm text-sm font-bold transition-all flex items-center whitespace-nowrap ml-auto">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    데이터 관리
+                </button>
             </div>
-            <!-- Main Title (Center Aligned, Larger) -->
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-center">교과 교실 운영 현황</h1>
-        </header>
+        </div>
+    </header>
 
-        <!-- Main Navigation -->
-        <div class="flex flex-wrap justify-center items-center gap-4 md:gap-8 border-b border-gray-200 bg-gray-50 py-4 px-6">
-            <button onclick="setMainTab('overlap')" id="tab-overlap" class="tab-btn px-6 md:px-8 py-3 text-lg md:text-xl font-bold rounded-xl border-2 transition-all shadow-sm">
-                교과 교실 중복 현황
-            </button>
-            <button onclick="setMainTab('assignment')" id="tab-assignment" class="tab-btn px-6 md:px-8 py-3 text-lg md:text-xl font-bold rounded-xl border-2 transition-all shadow-sm">
-                교실 배정 현황
-            </button>
-            <button onclick="setMainTab('empty')" id="tab-empty" class="tab-btn px-6 md:px-8 py-3 text-lg md:text-xl font-bold rounded-xl border-2 transition-all shadow-sm">
-                공강 교실 현황
-            </button>
+    <!-- STREAMING_CHUNK:Setting up the main content container and standalone navigation... -->
+    <div class="flex-grow flex flex-col w-full max-w-[1400px] mx-auto px-2 sm:px-4 mt-6 mb-8">
+        
+        <!-- 독립된 네비게이션 박스 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-3 mb-4 w-fit mx-auto flex justify-center overflow-x-auto">
+            <nav class="flex flex-row justify-center gap-3 min-w-max" id="main-nav">
+                <button onclick="setMainTab('overlap')" id="tab-overlap" class="tab-btn active bg-white border border-gray-300 text-gray-700 px-6 py-2.5 rounded-full text-base font-bold whitespace-nowrap">교실 중복 및 이동 안내</button>
+                <button onclick="setMainTab('assignment')" id="tab-assignment" class="tab-btn bg-white border border-gray-300 text-gray-700 px-6 py-2.5 rounded-full text-base font-bold whitespace-nowrap">교실 배정 현황</button>
+                <button onclick="setMainTab('empty')" id="tab-empty" class="tab-btn bg-white border border-gray-300 text-gray-700 px-6 py-2.5 rounded-full text-base font-bold whitespace-nowrap">공강 교실 현황</button>
+            </nav>
         </div>
 
-        <!-- Content Area -->
-        <div id="content-container" class="flex-grow bg-white relative flex flex-col">
-            <!-- Dynamic Content Injected Here -->
+        <main id="content-container" class="flex-grow bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-8 overflow-hidden flex flex-col relative min-h-[600px]">
+        </main>
+    </div>
+
+    <!-- STREAMING_CHUNK:Creating the admin modal for data management... -->
+    <div id="admin-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] flex justify-center items-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                    데이터 관리
+                </h2>
+                <button onclick="toggleAdminModal()" class="text-gray-500 hover:text-red-500 transition-colors">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="space-y-5">
+                <div class="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm font-medium">
+                    <p>💡 <strong>데이터 업데이트 방법</strong></p>
+                    <p class="mt-1">1. <strong>[다운로드]</strong> 버튼을 눌러 엑셀 파일(.xlsx)을 받습니다.</p>
+                    <p>2. 엑셀로 열어 데이터를 알맞게 수정 후 저장합니다.</p>
+                    <p>3. <strong>[파일 선택]</strong>을 눌러 수정한 엑셀 파일을 업로드하면 즉시 반영됩니다.</p>
+                </div>
+                <div class="border border-gray-200 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-3">
+                    <div class="flex-grow w-full">
+                        <h3 class="font-bold text-lg text-gray-700 mb-2">교실 배정 현황</h3>
+                        <input type="file" accept=".xlsx, .xls" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 cursor-pointer w-full" onchange="handleFileUpload(event, 'assignment')">
+                    </div>
+                    <button onclick="downloadData('assignment')" class="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap w-full md:w-auto">다운로드</button>
+                </div>
+                <div class="border border-gray-200 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-3">
+                    <div class="flex-grow w-full">
+                        <h3 class="font-bold text-lg text-gray-700 mb-2">공강 교실 현황 (2학년)</h3>
+                        <input type="file" accept=".xlsx, .xls" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 cursor-pointer w-full" onchange="handleFileUpload(event, 'empty2')">
+                    </div>
+                    <button onclick="downloadData('empty2')" class="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap w-full md:w-auto">다운로드</button>
+                </div>
+                <div class="border border-gray-200 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-3">
+                    <div class="flex-grow w-full">
+                        <h3 class="font-bold text-lg text-gray-700 mb-2">공강 교실 현황 (3학년)</h3>
+                        <input type="file" accept=".xlsx, .xls" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 cursor-pointer w-full" onchange="handleFileUpload(event, 'empty3')">
+                    </div>
+                    <button onclick="downloadData('empty3')" class="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap w-full md:w-auto">다운로드</button>
+                </div>
+                <div class="pt-4 border-t border-gray-200 flex justify-end">
+                    <button onclick="confirmResetAllData()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-sm w-full md:w-auto">
+                        모든 데이터 초기화 (주의)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STREAMING_CHUNK:Creating the custom message modal... -->
+    <div id="custom-msg-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[200] flex justify-center items-center hidden p-4">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md text-center">
+            <p id="custom-msg-text" class="text-gray-800 text-lg mb-6 whitespace-pre-line font-medium leading-relaxed"></p>
+            <div class="flex justify-center space-x-3">
+                <button id="custom-msg-cancel" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition-colors hidden">취소</button>
+                <button id="custom-msg-confirm" class="bg-primary hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-sm">확인</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- REAL DATA RESTORED ---
-        const assignmentData = [
+        /* STREAMING_CHUNK:Initializing state and utility functions... */
+        let confirmCallback = null;
+        const msgModal = document.getElementById('custom-msg-modal');
+        const msgText = document.getElementById('custom-msg-text');
+        const msgConfirmBtn = document.getElementById('custom-msg-confirm');
+        const msgCancelBtn = document.getElementById('custom-msg-cancel');
+
+        function showCustomMsg(msg, isConfirm = false, callback = null) {
+            msgText.innerText = msg;
+            confirmCallback = callback;
+            if(isConfirm) msgCancelBtn.classList.remove('hidden');
+            else msgCancelBtn.classList.add('hidden');
+            msgModal.classList.remove('hidden');
+        }
+
+        msgConfirmBtn.addEventListener('click', () => {
+            msgModal.classList.add('hidden');
+            if(confirmCallback) confirmCallback(true);
+        });
+
+        msgCancelBtn.addEventListener('click', () => {
+            msgModal.classList.add('hidden');
+            if(confirmCallback) confirmCallback(false);
+        });
+
+        /* STREAMING_CHUNK:Defining default assignment data (PURE TEXT ONLY) ... */
+        const defaultAssignmentData = [
             { room: "2-1", name: "김희수", subject: "도덕", coUser: "" },
-            { room: "2-2", name: "권현지", subject: "과학A", coUser: "<span class='text-blue-600'>박지은(1~4, 7~10)</span>, <span class='text-blue-600'>윤혜진(일본어 A, 목 5~7)</span>" },
-            { room: "2-2", name: "박지은", subject: "과학A", coUser: "<span class='text-blue-600'>권현지(5~6)</span>, <span class='text-blue-600'>윤혜진(일본어 A, 목 5~7)</span>" },
-            { room: "2-3", name: "이명원", subject: "역사", coUser: "<span class='text-blue-600'>정은정(일본어 B, 목 5~7)</span>" },
-            { room: "2-4", name: "이세영", subject: "국어B", coUser: "<span class='text-blue-600'>박소현(중국어, 목 6~7)</span>" },
-            { room: "2-5", name: "최서윤", subject: "수학", coUser: "<span class='text-purple-600 font-bold'>스포츠(우천 시, 목 3~4)</span>" },
-            { room: "2-6", name: "김나래", subject: "영어B", coUser: "<span class='text-green-600'>이상미(2~3)</span>, <span class='text-green-600'>김수경(4~6)</span>" },
-            { room: "2-6", name: "김수경", subject: "영어A", coUser: "<span class='text-green-600'>김나래(원어민, 월 1)</span>, <span class='text-green-600'>이상미(2~3)</span>, <span class='text-purple-600 font-bold'>스포츠(우천 시, 목 3~4)</span>" },
-            { room: "2-6", name: "이상미", subject: "영어A", coUser: "<span class='text-green-600'>김나래(원어민, 월 1)</span>, <span class='text-green-600'>김수경(4~6)</span>, <span class='text-purple-600 font-bold'>스포츠(우천 시, 목 3~4)</span>" },
-            { room: "2-7", name: "김영서", subject: "역사", coUser: "<span class='text-blue-600'>한지숙(스페인어, 목 5~7)</span>" },
-            { room: "2-8", name: "박지윤", subject: "국어A", coUser: "<span class='text-purple-600 font-bold'>스포츠(우천 시, 목 3~4)</span>" },
+            { room: "2-2", name: "권현지", subject: "과학A", coUser: "박지은(1~4, 7~10), 윤혜진(일본어 A, 목 5~7)" },
+            { room: "2-2", name: "박지은", subject: "과학A", coUser: "권현지(5~6), 윤혜진(일본어 A, 목 5~7)" },
+            { room: "2-3", name: "이명원", subject: "역사", coUser: "정은정(일본어 B, 목 5~7)" },
+            { room: "2-4", name: "이세영", subject: "국어B", coUser: "박소현(중국어, 목 6~7)" },
+            { room: "2-5", name: "최서윤", subject: "수학", coUser: "스포츠(우천 시, 목 3~4)" },
+            { room: "2-6", name: "김나래", subject: "영어B", coUser: "이상미(2~3), 김수경(4~6)" },
+            { room: "2-6", name: "김수경", subject: "영어A", coUser: "김나래(원어민, 월 1), 이상미(2~3), 스포츠(우천 시, 목 3~4)" },
+            { room: "2-6", name: "이상미", subject: "영어A", coUser: "김나래(원어민, 월 1), 김수경(4~6), 스포츠(우천 시, 목 3~4)" },
+            { room: "2-7", name: "김영서", subject: "역사", coUser: "한지숙(스페인어, 목 5~7)" },
+            { room: "2-8", name: "박지윤", subject: "국어A", coUser: "스포츠(우천 시, 목 3~4)" },
             { room: "2-9", name: "정현지", subject: "수학", coUser: "" },
             { room: "2-10", name: "김민서", subject: "영어A, B", coUser: "원어민(2~10), 김유경(2, 3), 최은지(4, 5) 김수경(6)" },
             { room: "2-10", name: "김수경", subject: "영어B", coUser: "원어민(2~10), 김민서(1, 7~10)" },
             { room: "2-10", name: "김유경", subject: "영어B", coUser: "2(월, 6), 3(화, 6)" },
             { room: "2-10", name: "최은지", subject: "영어B", coUser: "4(화 3), 5(화 2), 김수경(6), 김유경(2,3), 김민서(1, 7~10)" },
-            { room: "3-1", name: "이명원", subject: "역사", coUser: "<span class='text-blue-600'>홍유리(교양, 월 2, 3)</span>, <span class='text-blue-600'>이창욱(사회 9~10)</span>" },
-            { room: "3-1", name: "이창욱", subject: "사회", coUser: "<span class='text-blue-600'>홍유리(교양, 월 2, 3)</span>, <span class='text-blue-600'>이명원(역사 5, 6)</span>, <span class='text-purple-600 font-bold'>스포츠(우천 시, 목 1~2)</span>" },
-            { room: "3-1", name: "홍유리", subject: "교양", coUser: "<span class='text-blue-600'>이창욱(사회 9~10)</span>, <span class='text-blue-600'>이명원(역사 5~6)</span>" },
+            { room: "3-1", name: "이명원", subject: "역사", coUser: "홍유리(교양, 월 2, 3), 이창욱(사회 9~10)" },
+            { room: "3-1", name: "이창욱", subject: "사회", coUser: "홍유리(교양, 월 2, 3), 이명원(역사 5, 6), 스포츠(우천 시, 목 1~2)" },
+            { room: "3-1", name: "홍유리", subject: "교양", coUser: "이창욱(사회 9~10), 이명원(역사 5~6)" },
             { room: "3-2", name: "권현지", subject: "과학A", coUser: "손영국(1~4)" },
             { room: "3-2", name: "손영국", subject: "과학A", coUser: "권현지(5~10)" },
-            { room: "3-3", name: "옥금숙", subject: "사회, 교양", coUser: "<span class='text-purple-600 font-bold'>스포츠(우천 시, 목 1~2)</span>" },
+            { room: "3-3", name: "옥금숙", subject: "사회, 교양", coUser: "스포츠(우천 시, 목 1~2)" },
             { room: "3-4", name: "하나리", subject: "국어A", coUser: "" },
             { room: "3-5", name: "하현경", subject: "수학", coUser: "" },
             { room: "3-6", name: "김수경", subject: "영어A", coUser: "김유경(3~6)" },
             { room: "3-6", name: "김유경", subject: "영어A", coUser: "김수경(1~2)" },
-            { room: "3-7", name: "하성완", subject: "역사, 교양", coUser: "<span class='text-purple-600 font-bold'>스포츠(우천 시, 목 1~2)</span>" },
+            { room: "3-7", name: "하성완", subject: "역사, 교양", coUser: "스포츠(우천 시, 목 1~2)" },
             { room: "3-8", name: "이정혜", subject: "국어B", coUser: "" },
             { room: "3-9", name: "최희영", subject: "수학", coUser: "" },
             { room: "3-10", name: "최은지", subject: "영어A", coUser: "" },
@@ -95,21 +229,22 @@
             { room: "과학실 3", name: "김현정", subject: "과학B", coUser: "" },
             { room: "기술실", name: "김건우", subject: "기술가정", coUser: "문수아(1~7)" },
             { room: "기술실", name: "문수아", subject: "기가, 교양", coUser: "김건우(8~10)" },
-            { room: "상상나래실", name: "김건우", subject: "교양", coUser: "<span class='text-blue-600'>박혜란(2-1~8, 3-1~2)</span>" },
-            { room: "상상나래실", name: "박혜란", subject: "음악", coUser: "<span class='text-blue-600'>김건우(교양 월 2, 3)</span>" }
+            { room: "상상나래실", name: "김건우", subject: "교양", coUser: "박혜란(2-1~8, 3-1~2)" },
+            { room: "상상나래실", name: "박혜란", subject: "음악", coUser: "김건우(교양 월 2, 3)" }
         ];
 
-        const emptyRoomDataGrade2 = {
+        /* STREAMING_CHUNK:Defining default empty room data... */
+        const defaultEmptyRoomDataGrade2 = {
             '1교시': { '월': ['1','2','8'], '화': ['1','6'], '수': ['1','3','7'], '목': ['1','2','6','9'], '금': ['1','5','6'] },
             '2교시': { '월': ['1','3','5','6','7'], '화': ['3','4','7','9'], '수': ['2','4','7'], '목': ['3','7'], '금': ['1','3','8'] },
             '3교시': { '월': ['4','9'], '화': ['3','5','8','9'], '수': ['5','8','9'], '목': ['4','5','6','8','10'], '금': ['2','3','9','10'] },
             '4교시': { '월': ['5','6','8'], '화': ['2','6','7'], '수': ['1','3','7','10'], '목': ['1','2','3','5','6','8','9','10'], '금': ['4','5','7'] },
-            '5교시': { '월': ['3','7','9'], '화': ['3','4','6','7'], '수': ['과제탐구'], '목': ['5','6'], '금': ['4','6','8'] },
+            '5교시': { '월': ['2','5','8','10'], '화': ['2','3','4'], '수': ['과제탐구'], '목': ['2','3','6'], '금': ['1','4','7','9'] },
             '6교시': { '월': ['4','6','7'], '화': ['2','5','6','8','9'], '수': [], '목': ['8','9'], '금': ['3','6','7','10'] },
             '7교시': { '월': [], '화': ['1'], '수': [], '목': ['1','10'], '금': [] }
         };
 
-        const emptyRoomDataGrade3 = {
+        const defaultEmptyRoomDataGrade3 = {
             '1교시': { '월': ['1','3','7'], '화': ['2','7','8'], '수': ['1','3','6','10'], '목': ['1','3','5','7','8'], '금': ['1','4'] },
             '2교시': { '월': ['2','5','8'], '화': ['3','7','10'], '수': ['1','4','6','7','10'], '목': ['1','3','4','7','9','10'], '금': ['3','6','9','10'] },
             '3교시': { '월': ['2','4','9','10'], '화': ['3','4','5','9','10'], '수': ['1','2','5','8','9'], '목': ['1','6'], '금': ['1','5','7','8'] },
@@ -119,524 +254,494 @@
             '7교시': { '월': [], '화': ['1','2','8','10'], '수': [], '목': ['2','5','8','10'], '금': [] }
         };
 
-        // --- OVERLAP TAB STATE ---
-        let overlapRecords = []; // { id, date, name, period, dupTeacher, note, moveRoom, studentNotice, saved }
+        /* STREAMING_CHUNK:Loading data from local storage or defaults... */
+        let assignmentData = JSON.parse(localStorage.getItem('assignmentData_v20')) || defaultAssignmentData;
+        let emptyRoomDataGrade2 = JSON.parse(localStorage.getItem('emptyRoomDataGrade2_v20')) || defaultEmptyRoomDataGrade2;
+        let emptyRoomDataGrade3 = JSON.parse(localStorage.getItem('emptyRoomDataGrade3_v20')) || defaultEmptyRoomDataGrade3;
+        let overlapRecords = JSON.parse(localStorage.getItem('overlapRecords_v20')) || []; 
 
-        // --- 날짜 유틸리티 함수 ---
-        function getTodayString() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+        function saveData() {
+            localStorage.setItem('assignmentData_v20', JSON.stringify(assignmentData));
+            localStorage.setItem('emptyRoomDataGrade2_v20', JSON.stringify(emptyRoomDataGrade2));
+            localStorage.setItem('emptyRoomDataGrade3_v20', JSON.stringify(emptyRoomDataGrade3));
+            localStorage.setItem('overlapRecords_v20', JSON.stringify(overlapRecords));
         }
 
-        function changeSelectedDate(newDate) {
-            state.selectedDate = newDate;
-            renderContent();
-        }
+        const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+        const localToday = (new Date(Date.now() - tzOffset)).toISOString().split('T')[0];
+        let state = { mainTab: 'overlap', subTab: 'room', selectedDate: localToday };
 
-        function getWeekRange(dateStr) {
+        /* STREAMING_CHUNK:Defining date formatting and notice HTML generation... */
+        function formatDate(dateStr) {
             const d = new Date(dateStr);
-            const day = d.getDay();
-            const diffToMonday = d.getDate() - day + (day === 0 ? -6 : 1);
-            const monday = new Date(d);
-            monday.setDate(diffToMonday);
-            const sunday = new Date(monday);
-            sunday.setDate(monday.getDate() + 6);
-            return { start: monday, end: sunday };
-        }
-
-        function isSameWeek(dateStr1, dateStr2) {
-            const range1 = getWeekRange(dateStr1);
-            const range2 = getWeekRange(dateStr2);
-            return range1.start.getTime() === range2.start.getTime();
-        }
-
-        function formatDateShort(dateString) {
-            const d = new Date(dateString);
             const days = ['일', '월', '화', '수', '목', '금', '토'];
             return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}(${days[d.getDay()]})`;
         }
 
-        function getWeekDisplayStr(dateStr) {
-            const range = getWeekRange(dateStr);
-            const friday = new Date(range.start);
-            friday.setDate(range.start.getDate() + 4);
-            const format = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
-            return `${format(range.start)} ~ ${format(friday)}`;
+        function getWeekRange(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDay();
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+            let startOfWeek = new Date(date.setDate(diff));
+            let dates = [];
+            for(let i=0; i<5; i++) {
+                dates.push((new Date(startOfWeek - (startOfWeek.getTimezoneOffset() * 60000))).toISOString().split('T')[0]);
+                startOfWeek.setDate(startOfWeek.getDate() + 1);
+            }
+            return dates;
         }
 
-        // --- APP STATE ---
-        let state = {
-            mainTab: 'overlap',
-            subTab: 'room', // 'room', 'teacher', 'grade2', 'grade3'
-            selectedDate: getTodayString()
-        };
+        function getGeneralNoticeHTML() {
+            return `
+                <div class="bg-blue-50 border border-blue-100 p-6 mt-6 rounded-xl shadow-sm">
+                    <h2 class="text-lg font-bold text-primary mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        안내 사항
+                    </h2>
+                    <ol class="list-decimal indent-list text-gray-700 font-medium text-sm md:text-base">
+                        <li>교과 담당 교사는 시간이 이동되었을 경우, 교실 중복 여부를 확인하고 관련 내용(요일, 교시, 이동할 교실 등)을 학생들에게 안내하고 그 여부를 '학생 안내' 체크 박스에 표시하고 저장합니다.</li>
+                        <li>공강 교실이라도 해당 교실의 수업 교사도 시간 이동이 될 수 있으니 컴시간 알리미를 통해 해당 교실에 수업이 없는지 확인합니다.</li>
+                        <li>학급 담임 교사는 학생들에게 시간 이동 관련 안내를 받았는지 확인합니다.</li>
+                        <li>월요일 3학년 2~3교시 교양 선택, 목요일 2학년 5~7교시 생활외국어로 고정된 시간입니다.</li>
+                        <li>스포츠(목요일 3학년 1~2교시, 2학년 3~4교시)는 우천 시에만 사용하고 평소에는 다른 교과가 사용 가능합니다.</li>
+                        <li>문의 사항이 있으시면 정영자(764번)에게 연락주시기 바랍니다.</li>
+                    </ol>
+                </div>
+            `;
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderTabs();
-            renderContent();
-        });
+        function getAssignmentNoticeHTML() {
+            return `
+                <div class="bg-blue-50 border border-blue-100 p-6 mt-6 rounded-xl shadow-sm">
+                    <h2 class="text-lg font-bold text-primary mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        안내 사항
+                    </h2>
+                    <ol class="list-decimal indent-list text-gray-700 font-medium text-sm md:text-base">
+                        <li>교실별 탭에서 공동 사용자를 확인하고, 수업 시간이 이동되었을 경우 교실 중복 여부를 반드시 확인합니다.</li>
+                        <li>교사별 탭에서 사용하는 교실을 확인하고, 여러 교실에 배정되어 있을 경우 학년과 학급을 잘 숙지하여 교실에 입실합니다.</li>
+                        <li>공강 교실 현황을 이용할 때는 반드시 원래 배정된 교사의 수업 이동 여부도 컴시간 알리미를 통해 확인합니다.</li>
+                    </ol>
+                </div>
+            `;
+        }
 
+        function getReferenceNoticeHTML() {
+            return `
+                <div class="bg-white border border-gray-200 p-5 mt-6 rounded-xl shadow-sm">
+                    <h2 class="text-base font-bold text-primary mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        참고
+                    </h2>
+                    <ul class="list-disc indent-list text-gray-700 font-medium text-sm leading-relaxed">
+                        <li>DS 1실과 시청각실(주경미), DS 3실(홍지연), 상상나래실(박혜란)은 관리 담당자와 의논한 후 사용.</li>
+                        <li>지정된 학급(목요일 3학년 1~2교시, 2학년 3~4교시)은 우천 시 스포츠 사용, 평소에는 사용 가능.</li>
+                        <li>빈 교실 사용하고자 할 때, 해당 교실의 원 배정 교사의 수업 이동도 확인한 후 사용.</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        /* STREAMING_CHUNK:Implementing tab switching logic... */
         function setMainTab(tab) {
             state.mainTab = tab;
-            if (tab === 'assignment') state.subTab = 'room';
             if (tab === 'empty') state.subTab = 'grade2';
+            else if (tab === 'assignment') state.subTab = 'room';
             renderTabs();
             renderContent();
+        }
+
+        function renderTabs() {
+            ['overlap', 'assignment', 'empty'].forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                if (el) {
+                    if (t === state.mainTab) el.classList.add('active');
+                    else el.classList.remove('active');
+                }
+            });
         }
 
         function setSubTab(tab) {
             state.subTab = tab;
             renderContent();
-            updateSubTabUI();
-        }
-
-        function renderTabs() {
-            const tabs = ['overlap', 'assignment', 'empty'];
-            tabs.forEach(tab => {
-                const el = document.getElementById(`tab-${tab}`);
-                if (state.mainTab === tab) {
-                    el.classList.add('bg-primary', 'text-white', 'border-primary', 'shadow-md');
-                    el.classList.remove('bg-white', 'text-gray-600', 'border-gray-300', 'hover:bg-gray-100');
-                } else {
-                    el.classList.remove('bg-primary', 'text-white', 'border-primary', 'shadow-md');
-                    el.classList.add('bg-white', 'text-gray-600', 'border-gray-300', 'hover:bg-gray-100');
-                }
-            });
-        }
-
-        function updateSubTabUI() {
-            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
-                btn.classList.remove('bg-primary', 'text-white', 'shadow-md');
-                btn.classList.add('bg-white', 'text-gray-600', 'hover:bg-gray-50', 'border', 'border-gray-300');
-            });
-            const activeBtn = document.getElementById(`subtab-${state.subTab}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('bg-white', 'text-gray-600', 'hover:bg-gray-50', 'border-gray-300');
-                activeBtn.classList.add('bg-primary', 'text-white', 'shadow-md', 'border-primary');
-            }
         }
 
         function renderContent() {
             const container = document.getElementById('content-container');
-            container.innerHTML = '';
-
-            if (state.mainTab === 'overlap') renderOverlapTab(container);
-            else if (state.mainTab === 'assignment') renderAssignmentTab(container);
+            container.innerHTML = "";
+            if (state.mainTab === 'assignment') renderAssignmentTab(container);
             else if (state.mainTab === 'empty') renderEmptyRoomTab(container);
+            else if (state.mainTab === 'overlap') renderOverlapTab(container);
         }
 
-        function getNoticeHTML() {
-            return `
-                <div class="mt-auto bg-blue-50 border-t-2 border-blue-200 p-6 text-base text-gray-800 shadow-inner w-full">
-                    <h3 class="font-bold text-lg text-primary mb-4 flex items-center max-w-7xl mx-auto">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        안내 사항
-                    </h3>
-                    <div class="max-w-7xl mx-auto">
-                        <ol class="list-decimal pl-5 space-y-2 font-medium">
-                            <li>시간 이동 교사는 교과 교실 중복 내용을 확인하고 이동할 교실을 입력한 후 학생들에게 안내한다.</li>
-                            <li>공강 교실이라도 해당 교실의 수업 교사도 시간 이동이 될 수 있으니 컴시간 알리미를 통해 해당 교실에 수업이 없는지 확인한다.</li>
-                            <li><strong>월요일 3학년 2~3교시 교양 선택, 목요일 2학년 5~7교시 생활외국어</strong>로 고정된 시간입니다.</li>
-                            <li>스포츠(목요일 3학년 1~2교시, 2학년 3~4교시)는 우천 시에만 사용하고 평소에는 다른 교과가 사용 가능합니다.</li>
-                            <li>문의 사항이 있으시면 정영자(764번)에게 연락주시기 바랍니다.</li>
-                        </ol>
+        /* STREAMING_CHUNK:Rendering the assignment tab content... */
+        function renderAssignmentTab(container) {
+            let displayData = [...assignmentData];
+            let isTeacherView = state.subTab === 'teacher';
+
+            if (isTeacherView) {
+                // 교사 이름 가나다 순 정렬
+                displayData.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            }
+
+            let currentKey = null;
+            let isLightGreen = false; // 첫 그룹이 흰색이 되도록 초기값 false
+
+            let tableRows = displayData.map((d, index) => {
+                const coUserText = d.coUser ? d.coUser : '-';
+                const groupKey = isTeacherView ? d.name : d.room;
+
+                if (groupKey !== currentKey) {
+                    isLightGreen = !isLightGreen;
+                    currentKey = groupKey;
+                }
+                
+                const bgClass = isLightGreen ? 'bg-white' : 'bg-group-green';
+                const rowClass = `${bgClass} hover:bg-gray-200 border-b border-gray-200 transition-colors`;
+
+                if (isTeacherView) {
+                    return `
+                    <tr class="${rowClass}">
+                        <td class="px-4 py-3.5 font-bold text-gray-900 border-r border-gray-200">${d.name || '-'}</td>
+                        <td class="px-4 py-3.5 font-bold text-gray-800">${d.room}</td>
+                        <td class="px-4 py-3.5 text-gray-700">${d.subject || '-'}</td>
+                        <td class="px-4 py-3.5 text-sm text-center">${coUserText}</td>
+                    </tr>
+                    `;
+                } else {
+                    return `
+                    <tr class="${rowClass}">
+                        <td class="px-4 py-3.5 font-bold text-gray-900 border-r border-gray-200 w-32">${d.room}</td>
+                        <td class="px-4 py-3.5 font-bold text-gray-800 w-32">${d.name || '-'}</td>
+                        <td class="px-4 py-3.5 text-gray-700 w-40">${d.subject || '-'}</td>
+                        <td class="px-4 py-3.5 text-sm text-center">${coUserText}</td>
+                    </tr>
+                    `;
+                }
+            }).join('');
+
+            let headerHTML = isTeacherView ? `
+                <tr>
+                    <th class="px-4 py-3.5 font-bold border-r border-gray-300 w-32">이름</th>
+                    <th class="px-4 py-3.5 font-bold border-r border-gray-300 w-32">배정 교실</th>
+                    <th class="px-4 py-3.5 font-bold border-r border-gray-300 w-40">교과</th>
+                    <th class="px-4 py-3.5 font-bold">공동 사용자</th>
+                </tr>
+            ` : `
+                <tr>
+                    <th class="px-4 py-3.5 font-bold border-r border-gray-300 w-32">배정 교실</th>
+                    <th class="px-4 py-3.5 font-bold border-r border-gray-300 w-32">이름</th>
+                    <th class="px-4 py-3.5 font-bold border-r border-gray-300 w-40">교과</th>
+                    <th class="px-4 py-3.5 font-bold">공동 사용자</th>
+                </tr>
+            `;
+
+            container.innerHTML = `
+                <div class="flex flex-col h-full w-full">
+                    <div class="flex justify-center mb-6">
+                        <div class="flex space-x-2 p-1 rounded-full border border-gray-200 bg-white shadow-sm">
+                            <button onclick="setSubTab('room')" class="${!isTeacherView ? 'sub-tab-active' : 'sub-tab-inactive'} px-6 py-2 text-sm font-bold rounded-full transition-all border border-transparent">교실별</button>
+                            <button onclick="setSubTab('teacher')" class="${isTeacherView ? 'sub-tab-active' : 'sub-tab-inactive'} px-6 py-2 text-sm font-bold rounded-full transition-all border border-transparent">교사별</button>
+                        </div>
                     </div>
+                    
+                    <div class="overflow-x-auto rounded-xl shadow-sm border border-gray-300 bg-white">
+                        <table class="w-full text-sm text-center table-fixed min-w-[700px]">
+                            <thead class="text-sm text-gray-800 bg-gray-200 border-b-2 border-gray-300">
+                                ${headerHTML}
+                            </thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>
+                    ${getAssignmentNoticeHTML()}
                 </div>
             `;
         }
 
-        function renderOverlapTab(container) {
-            let html = `
-                <div class="p-6 flex-grow flex flex-col items-center w-full">
-                    
-                    <!-- 제목 및 달력 -->
-                    <div class="w-full max-w-7xl flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
-                        <div class="flex items-center space-x-4">
-                            <h2 class="text-2xl font-bold text-gray-800">교과 교실 중복 및 이동</h2>
-                            <input type="date" id="overlap-date-picker" value="${state.selectedDate}" onchange="changeSelectedDate(this.value)" class="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-primary text-gray-700 font-bold cursor-pointer shadow-sm text-sm bg-white">
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <div class="text-sm font-bold text-primary bg-blue-50 px-4 py-2 rounded-lg border border-blue-200 shadow-sm">
-                                해당 주간: ${getWeekDisplayStr(state.selectedDate)}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 입력 폼 -->
-                    <div class="w-full max-w-7xl bg-gray-50 border border-gray-300 rounded-xl p-4 mb-8 shadow-sm flex flex-wrap gap-4 items-end">
-                        <div class="flex flex-col">
-                            <label class="text-sm font-bold text-gray-600 mb-1">시간 이동 교사</label>
-                            <input type="text" id="overlap-name-input" placeholder="이름" class="border border-gray-300 rounded-lg p-2 w-32 focus:outline-none focus:border-primary">
-                        </div>
-                        <div class="flex flex-col">
-                            <label class="text-sm font-bold text-gray-600 mb-1">학반</label>
-                            <input type="text" id="overlap-class-input" placeholder="예: 2-1" class="border border-gray-300 rounded-lg p-2 w-20 focus:outline-none focus:border-primary">
-                        </div>
-                        <div class="flex flex-col">
-                            <label class="text-sm font-bold text-gray-600 mb-1">교시</label>
-                            <input type="text" id="overlap-period-input" placeholder="예: 월 3" class="border border-gray-300 rounded-lg p-2 w-24 focus:outline-none focus:border-primary">
-                        </div>
-                        <div class="flex flex-col">
-                            <label class="text-sm font-bold text-gray-600 mb-1">중복 교사</label>
-                            <input type="text" id="overlap-dup-input" placeholder="이름" class="border border-gray-300 rounded-lg p-2 w-32 focus:outline-none focus:border-primary">
-                        </div>
-                        <div class="flex flex-col flex-grow">
-                            <label class="text-sm font-bold text-gray-600 mb-1">비고 (사유 등)</label>
-                            <input type="text" id="overlap-note-input" placeholder="비고 입력" class="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-primary">
-                        </div>
-                        <button onclick="clearOverlapInputs()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-sm h-[42px]">
-                            비우기
-                        </button>
-                        <button onclick="addOverlapRecord()" class="bg-primary hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-sm h-[42px]">
-                            추가
-                        </button>
-                    </div>
+        /* STREAMING_CHUNK:Rendering the empty room tab content without generic coloring... */
+        function renderEmptyRoomTab(container) {
+            const data = state.subTab === 'grade3' ? emptyRoomDataGrade3 : emptyRoomDataGrade2;
+            let tableRows = '';
+            
+            ['1교시','2교시','3교시','4교시','5교시','6교시','7교시'].forEach(period => {
+                tableRows += `<tr class="border-b border-gray-200 hover:bg-gray-50"><th class="px-4 py-4 font-bold text-gray-900 bg-gray-100 border-r border-gray-200 whitespace-nowrap text-base">${period.replace('교시','')}</th>`;
+                ['월','화','수','목','금'].forEach(day => {
+                    const rooms = data[period]?.[day] || [];
+                    let roomText = '-';
+                    if (rooms.length > 0) {
+                        // 순수 데이터로만 출력하도록 수정
+                        roomText = rooms.join(', ');
+                    } else {
+                        roomText = '';
+                    }
+                    tableRows += `<td class="px-4 py-4 text-gray-800 text-base border-r border-gray-100 last:border-0">${roomText}</td>`;
+                });
+                tableRows += `</tr>`;
+            });
 
-                    <!-- 통합 현황 표 -->
-                    <div class="w-full max-w-7xl overflow-x-auto rounded-xl border border-gray-300 shadow-sm mb-8">
-                        <table class="w-full text-base text-gray-700 min-w-max">
-                            <thead class="bg-gray-200 text-gray-700 border-b-2 border-gray-400">
+            container.innerHTML = `
+                <div class="flex flex-col h-full w-full max-w-4xl mx-auto">
+                    <div class="flex justify-center mb-6">
+                        <div class="flex space-x-2 p-1 rounded-full border border-gray-200 bg-white shadow-sm">
+                            <button onclick="setSubTab('grade2')" class="${state.subTab !== 'grade3' ? 'sub-tab-active' : 'sub-tab-inactive'} px-6 py-2 text-sm font-bold rounded-full transition-all border border-transparent">2학년</button>
+                            <button onclick="setSubTab('grade3')" class="${state.subTab === 'grade3' ? 'sub-tab-active' : 'sub-tab-inactive'} px-6 py-2 text-sm font-bold rounded-full transition-all border border-transparent">3학년</button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto rounded-xl shadow-sm border border-gray-300 bg-white">
+                        <table class="w-full text-center table-fixed">
+                            <thead class="text-base text-gray-800 bg-gray-200 border-b-2 border-gray-300">
                                 <tr>
-                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 w-28">날짜</th>
-                                    <th class="px-4 py-3 text-center font-bold border-r border-gray-300 w-32">시간 이동 교사</th>
-                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 w-20">학반</th>
-                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 w-20">교시</th>
-                                    <th class="px-4 py-3 text-center font-bold border-r border-gray-300 w-32">중복 교사</th>
-                                    <th class="px-4 py-3 text-center font-bold border-r border-gray-300">비고</th>
-                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 w-20 text-red-600">삭제</th>
-                                    <th class="px-4 py-3 text-center font-bold border-r border-gray-300 bg-yellow-100 w-40">이동할 교실</th>
-                                    <th class="px-3 py-3 text-center font-bold border-r border-gray-300 bg-yellow-100 w-24">학생 안내</th>
-                                    <th class="px-3 py-3 text-center font-bold w-20 bg-yellow-100 text-blue-600">확인</th>
+                                    <th class="px-4 py-3 font-bold w-16 border-r border-gray-300 bg-gray-100"></th>
+                                    <th class="px-4 py-3 font-bold text-gray-800 border-r border-gray-300 w-[18%]">월</th>
+                                    <th class="px-4 py-3 font-bold text-gray-800 border-r border-gray-300 w-[18%]">화</th>
+                                    <th class="px-4 py-3 font-bold text-gray-800 border-r border-gray-300 w-[18%]">수</th>
+                                    <th class="px-4 py-3 font-bold text-gray-800 border-r border-gray-300 w-[18%]">목</th>
+                                    <th class="px-4 py-3 font-bold text-gray-800 w-[18%]">금</th>
                                 </tr>
                             </thead>
-                            <tbody id="overlap-table-body" class="bg-white divide-y divide-gray-200">
-                                <!-- Records will be injected here -->
-                            </tbody>
+                            <tbody>${tableRows}</tbody>
                         </table>
-                        <div id="overlap-empty-msg" class="text-center p-8 text-gray-500 font-medium hidden">해당 주간에 등록된 중복 현황이 없습니다. 위에서 추가해 주세요.</div>
+                    </div>
+                    ${getReferenceNoticeHTML()}
+                </div>
+            `;
+        }
+
+        /* STREAMING_CHUNK:Rendering the overlap tab content... */
+        function renderOverlapTab(container) {
+            const weekDates = getWeekRange(state.selectedDate);
+            const html = `
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 flex items-center">교실 중복 현황</h2>
+                    <div class="flex items-center space-x-3 bg-gray-50 p-2.5 rounded-xl border border-gray-200 shadow-sm">
+                        <label class="text-sm font-bold text-gray-700">날짜 선택:</label>
+                        <input type="date" id="date-picker" value="${state.selectedDate}" onchange="changeDate(event)" class="bg-white border border-gray-300 rounded-lg p-2 cursor-pointer shadow-sm text-sm font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary">
                     </div>
                 </div>
-                ${getNoticeHTML()}
+                
+                <div class="bg-blue-50/50 border border-blue-200 rounded-xl p-5 shadow-sm mb-8 flex flex-col gap-3">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="col-span-2 md:col-span-1"><label class="block text-xs font-bold text-gray-600 mb-1.5">시간 이동 교사</label><input type="text" id="overlap-name" placeholder="이름" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1.5">학반</label><input type="text" id="overlap-class" placeholder="예: 2-3" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1.5">교시</label><input type="text" id="overlap-period" placeholder="숫자" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                        <div class="col-span-2 md:col-span-1"><label class="block text-xs font-bold text-gray-600 mb-1.5">중복 교사</label><input type="text" id="overlap-dup" placeholder="이름" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                        <div class="col-span-2 md:col-span-1 w-1/2"><label class="block text-xs font-bold text-gray-600 mb-1.5">비고</label><input type="text" id="overlap-note" placeholder="내용" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"></div>
+                    </div>
+                    <div class="flex justify-end space-x-2 mt-2">
+                        <button onclick="clearOverlapInputs()" class="bg-white border border-gray-300 hover:bg-gray-100 font-bold py-2 px-6 rounded-lg text-sm transition-colors text-gray-700 shadow-sm">비우기</button>
+                        <button onclick="addOverlapRecord()" class="bg-primary hover:bg-blue-800 text-white font-bold py-2 px-8 rounded-lg text-sm shadow-sm transition-colors">추가하기</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-end mb-3">
+                    <h3 class="font-bold text-primary text-lg flex items-center">
+                        <svg class="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        주간 현황 (${formatDate(weekDates[0])} ~ ${formatDate(weekDates[4])})
+                    </h3>
+                </div>
+                
+                <div class="overflow-x-auto bg-white border border-gray-300 rounded-xl flex-grow shadow-sm mb-6">
+                    <table class="w-full text-sm text-center text-gray-700 min-w-[1000px] table-fixed">
+                        <thead class="text-sm text-gray-800 bg-gray-200 border-b-2 border-gray-300">
+                            <tr>
+                                <th class="px-3 py-3.5 font-bold w-24">날짜</th>
+                                <th class="px-3 py-3.5 font-bold border-l border-gray-300 w-28">시간 이동 교사</th>
+                                <th class="px-2 py-3.5 font-bold border-l border-gray-300 w-20">학반</th>
+                                <th class="px-2 py-3.5 font-bold border-l border-gray-300 w-16">교시</th>
+                                <th class="px-3 py-3.5 font-bold border-l border-gray-300 w-24">중복 교사</th>
+                                <th class="px-3 py-3.5 font-bold border-l border-gray-300 w-40">비고</th>
+                                <th class="px-2 py-3.5 font-bold border-l border-gray-300 w-16">삭제</th>
+                                <th class="px-3 py-3.5 font-bold border-l-2 border-yellow-400 bg-yellow-50 text-yellow-900 w-32">이동할 교실</th>
+                                <th class="px-2 py-3.5 font-bold border-l border-yellow-400 bg-yellow-50 text-yellow-900 w-20">학생 안내</th>
+                                <th class="px-2 py-3.5 font-bold border-l border-yellow-400 bg-yellow-50 text-yellow-900 w-24">확인</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overlap-tbody"></tbody>
+                    </table>
+                </div>
+                ${getGeneralNoticeHTML()}
             `;
             container.innerHTML = html;
             renderOverlapTableBody();
         }
 
+        /* STREAMING_CHUNK:Handling overlap record actions... */
+        function changeDate(e) { state.selectedDate = e.target.value; renderContent(); }
+        function clearOverlapInputs() { ['name','class','period','dup','note'].forEach(id => document.getElementById(`overlap-${id}`).value = ""); }
+
         function addOverlapRecord() {
-            const name = document.getElementById('overlap-name-input').value.trim();
-            const gradeClass = document.getElementById('overlap-class-input').value.trim();
-            const period = document.getElementById('overlap-period-input').value.trim();
-            const dup = document.getElementById('overlap-dup-input').value.trim();
-            const note = document.getElementById('overlap-note-input').value.trim();
-
-            if (!name) {
-                alert('시간 이동 교사 이름을 입력해주세요.');
-                return;
-            }
-
-            const newRecord = {
-                id: Date.now(),
-                date: state.selectedDate, // 선택된 날짜 자동 저장
-                name: name,
-                gradeClass: gradeClass,
-                period: period,
-                dupTeacher: dup,
-                note: note,
-                moveRoom: '',
-                studentNotice: false, // 텍스트에서 체크박스용 boolean(참/거짓)으로 변경
-                saved: false
-            };
-
-            overlapRecords.push(newRecord);
-            renderOverlapTableBody();
-
-            // Clear inputs
-            clearOverlapInputs();
-        }
-
-        function clearOverlapInputs() {
-            document.getElementById('overlap-name-input').value = '';
-            document.getElementById('overlap-class-input').value = '';
-            document.getElementById('overlap-period-input').value = '';
-            document.getElementById('overlap-dup-input').value = '';
-            document.getElementById('overlap-note-input').value = '';
+            const name = document.getElementById('overlap-name').value.trim();
+            if (!name) return showCustomMsg("시간 이동 교사 이름을 입력해주세요.");
+            overlapRecords.push({
+                id: Date.now(), date: state.selectedDate, name,
+                gradeClass: document.getElementById('overlap-class').value.trim(),
+                period: document.getElementById('overlap-period').value.trim(),
+                dupTeacher: document.getElementById('overlap-dup').value.trim(),
+                note: document.getElementById('overlap-note').value.trim(),
+                moveRoom: '', studentNotice: false, saved: false
+            });
+            saveData(); renderOverlapTableBody(); clearOverlapInputs();
         }
 
         function deleteOverlapRecord(id) {
-            overlapRecords = overlapRecords.filter(r => r.id !== id);
-            renderContent();
+            showCustomMsg("해당 행을 삭제하시겠습니까?", true, (conf) => {
+                if(conf) { overlapRecords = overlapRecords.filter(r => r.id !== id); saveData(); renderOverlapTableBody(); }
+            });
         }
 
         function saveMoveInfo(id) {
-            const roomInput = document.getElementById(`move-room-${id}`).value;
-            const noticeInput = document.getElementById(`move-notice-${id}`).checked; // 텍스트 value 대신 체크 여부(checked) 확인
-            
-            const record = overlapRecords.find(r => r.id === id);
-            if(record) {
-                record.moveRoom = roomInput;
-                record.studentNotice = noticeInput;
-                record.saved = true;
+            const r = overlapRecords.find(r => r.id === id);
+            if(r) {
+                r.moveRoom = document.getElementById(`move-room-${id}`).value;
+                r.studentNotice = document.getElementById(`move-notice-${id}`).checked;
+                r.saved = true; saveData(); renderOverlapTableBody();
             }
-            renderOverlapTableBody();
         }
 
         function editMoveInfo(id) {
-            const record = overlapRecords.find(r => r.id === id);
-            if(record) {
-                record.saved = false;
-            }
-            renderOverlapTableBody();
+            const r = overlapRecords.find(r => r.id === id);
+            if(r) { r.saved = false; saveData(); renderOverlapTableBody(); }
         }
 
+        /* STREAMING_CHUNK:Rendering the overlap table rows... */
         function renderOverlapTableBody() {
-            const tbody = document.getElementById('overlap-table-body');
-            const emptyMsg = document.getElementById('overlap-empty-msg');
-            if(!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            // 필터링: 선택된 날짜와 같은 주간(월~일)에 있는 기록들만 가져옴
-            const weeklyRecords = overlapRecords.filter(r => isSameWeek(r.date, state.selectedDate));
-            
-            // 정렬: 1순위 날짜순, 2순위 먼저 입력한 순
-            weeklyRecords.sort((a, b) => new Date(a.date) - new Date(b.date) || a.id - b.id);
+            const tbody = document.getElementById('overlap-tbody');
+            if (!tbody) return;
+            const weekDates = getWeekRange(state.selectedDate);
+            const currentRecs = overlapRecords.filter(r => weekDates.includes(r.date)).sort((a,b) => a.date.localeCompare(b.date) || (parseInt(a.period)||99) - (parseInt(b.period)||99));
 
-            if (weeklyRecords.length === 0) {
-                if(emptyMsg) emptyMsg.classList.remove('hidden');
-            } else {
-                if(emptyMsg) emptyMsg.classList.add('hidden');
-            }
-
-            weeklyRecords.forEach(record => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 transition-colors";
-                
-                let moveRoomCell = '';
-                let noticeCell = '';
-                let actionBtn = '';
-
-                if (record.saved) {
-                    moveRoomCell = `<td class="px-4 py-2 text-center font-bold text-blue-700 bg-yellow-50 border-r border-gray-200">${record.moveRoom || '-'}</td>`;
-                    noticeCell = `<td class="px-2 py-2 text-center bg-yellow-50 border-r border-gray-200">
-                        ${record.studentNotice ? '<span class="text-green-600 font-bold text-sm">완료✅</span>' : '<span class="text-gray-400 font-medium text-sm">미완료</span>'}
-                    </td>`;
-                    actionBtn = `<td class="px-2 py-2 text-center bg-yellow-50"><button onclick="editMoveInfo(${record.id})" class="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 bg-blue-100 rounded text-sm transition-colors w-full">수정</button></td>`;
-                } else {
-                    moveRoomCell = `<td class="px-2 py-2 text-center bg-yellow-50 border-r border-gray-200"><input type="text" id="move-room-${record.id}" value="${record.moveRoom}" placeholder="교실 입력" class="border border-gray-300 rounded p-1 w-full text-center focus:border-primary text-sm"></td>`;
-                    noticeCell = `<td class="px-2 py-2 text-center bg-yellow-50 border-r border-gray-200">
-                        <input type="checkbox" id="move-notice-${record.id}" ${record.studentNotice ? 'checked' : ''} class="w-5 h-5 cursor-pointer accent-blue-600 align-middle hover:scale-110 transition-transform">
-                    </td>`;
-                    actionBtn = `<td class="px-2 py-2 text-center bg-yellow-50"><button onclick="saveMoveInfo(${record.id})" class="text-green-700 hover:text-green-900 font-bold px-2 py-1 bg-green-200 rounded text-sm transition-colors w-full">저장</button></td>`;
-                }
-
-                tr.innerHTML = `
-                    <td class="px-3 py-3 text-center border-r border-gray-200 bg-gray-50"><span class="text-sm font-bold text-gray-600">${formatDateShort(record.date)}</span></td>
-                    <td class="px-4 py-3 text-center font-medium border-r border-gray-200">${record.name}</td>
-                    <td class="px-3 py-3 text-center border-r border-gray-200">${record.gradeClass || ''}</td>
-                    <td class="px-3 py-3 text-center border-r border-gray-200">${record.period}</td>
-                    <td class="px-4 py-3 text-center border-r border-gray-200">${record.dupTeacher}</td>
-                    <td class="px-4 py-3 text-center border-r border-gray-200">${record.note}</td>
-                    <td class="px-2 py-3 text-center border-r border-gray-200">
-                        <button onclick="deleteOverlapRecord(${record.id})" class="text-red-500 hover:text-white hover:bg-red-500 font-bold px-2 py-1 border border-red-300 rounded text-sm transition-colors w-full">삭제</button>
+            tbody.innerHTML = currentRecs.length ? currentRecs.map(r => {
+                const isSaved = r.saved;
+                return `<tr class="border-b border-gray-200 hover:bg-gray-50 bg-white">
+                    <td class="px-3 py-3 font-medium bg-gray-50/50 border-r border-gray-200 text-gray-600">${formatDate(r.date)}</td>
+                    <td class="px-3 py-3 font-bold text-gray-900 border-r border-gray-100">${r.name}</td>
+                    <td class="px-2 py-3 border-r border-gray-100 text-gray-700">${r.gradeClass || '-'}</td>
+                    <td class="px-2 py-3 border-r border-gray-100 font-bold text-primary">${r.period}</td>
+                    <td class="px-3 py-3 border-r border-gray-100 text-gray-700">${r.dupTeacher || '-'}</td>
+                    <td class="px-3 py-3 text-xs text-gray-600 text-left">${r.note || '-'}</td>
+                    <td class="px-2 py-3 border-l border-gray-200">
+                        <button onclick="deleteOverlapRecord(${r.id})" class="text-xs bg-white text-red-500 hover:bg-red-50 hover:text-red-600 px-2.5 py-1.5 rounded-md font-bold border border-red-200 transition-colors shadow-sm w-full">삭제</button>
                     </td>
-                    ${moveRoomCell}
-                    ${noticeCell}
-                    ${actionBtn}
-                `;
-                tbody.appendChild(tr);
-            });
+                    ${isSaved 
+                        ? `<td class="px-3 py-3 border-l-2 border-yellow-400 bg-yellow-50/50 font-bold text-yellow-900 text-base">${r.moveRoom || '-'}</td>
+                           <td class="px-2 py-3 border-l border-yellow-200 bg-yellow-50/50">${r.studentNotice ? '<span class="text-green-700 font-bold bg-green-100 border border-green-200 px-2.5 py-1 rounded-md text-xs shadow-sm">완료 ✅</span>' : '<span class="text-gray-400 text-xs font-medium">미완료</span>'}</td>
+                           <td class="px-2 py-3 border-l border-yellow-200 bg-yellow-50/50"><button onclick="editMoveInfo(${r.id})" class="text-xs bg-white hover:bg-gray-100 text-gray-700 px-4 py-1.5 rounded-md font-bold border border-gray-300 w-full transition-colors shadow-sm">수정</button></td>`
+                        : `<td class="px-2 py-2 border-l-2 border-yellow-400 bg-yellow-100/50"><input type="text" id="move-room-${r.id}" value="${r.moveRoom}" placeholder="교실 입력" class="w-full bg-white border border-yellow-400 p-1.5 text-center rounded-md text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-inner font-bold text-gray-800"></td>
+                           <td class="px-2 py-2 border-l border-yellow-300 bg-yellow-100/50"><input type="checkbox" id="move-notice-${r.id}" ${r.studentNotice?'checked':''} class="w-5 h-5 cursor-pointer accent-primary align-middle mt-1 rounded"></td>
+                           <td class="px-2 py-2 border-l border-yellow-300 bg-yellow-100/50"><button onclick="saveMoveInfo(${r.id})" class="text-xs bg-primary hover:bg-blue-800 text-white px-4 py-1.5 rounded-md font-bold w-full transition-colors shadow-sm">저장</button></td>`
+                    }
+                </tr>`;
+            }).join('') : `<tr><td colspan="10" class="px-6 py-16 text-center text-gray-400 font-medium bg-gray-50/30">선택한 주간에 등록된 현황이 없습니다.</td></tr>`;
         }
 
-        function compareRooms(a, b) {
-            const parse = (r) => {
-                let match = r.match(/^(\d+)-(\d+)$/);
-                if (match) return [parseInt(match[1]), parseInt(match[2])];
-                return [99, r];
-            };
-            const [g1, r1] = parse(a.room);
-            const [g2, r2] = parse(b.room);
-            if (g1 !== g2) return g1 - g2;
-            if (typeof r1 === 'number' && typeof r2 === 'number') return r1 - r2;
-            return a.room.localeCompare(b.room);
-        }
+        /* STREAMING_CHUNK:Implementing admin and Excel file upload functions... */
+        function toggleAdminModal() { document.getElementById('admin-modal').classList.toggle('hidden'); }
+        
+        function downloadData(type) {
+            const wb = XLSX.utils.book_new();
+            let ws;
+            let fileName = '';
 
-        function renderAssignmentTab(container) {
-            let sortedData = [...assignmentData];
-            if (state.subTab === 'teacher') {
-                sortedData.sort((a, b) => a.name.localeCompare(b.name));
+            if (type === 'assignment') {
+                const data = assignmentData.map(d => ({
+                    '배정 교실': d.room || '',
+                    '이름': d.name || '',
+                    '교과': d.subject || '',
+                    '공동 사용자': d.coUser || ''
+                }));
+                ws = XLSX.utils.json_to_sheet(data);
+                fileName = '교실배정현황.xlsx';
             } else {
-                sortedData.sort(compareRooms);
-            }
-
-            let html = `
-                <div class="p-6 flex-grow flex flex-col w-full items-center">
-                    <!-- 서브 탭 (가운데 정렬) -->
-                    <div class="flex justify-center space-x-4 mb-6 w-full max-w-7xl">
-                        <button id="subtab-room" onclick="setSubTab('room')" class="sub-tab-btn px-8 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm border-2">교실별</button>
-                        <button id="subtab-teacher" onclick="setSubTab('teacher')" class="sub-tab-btn px-8 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm border-2">교사별</button>
-                    </div>
-
-                    <!-- 표 영역 -->
-                    <div class="w-full max-w-7xl">
-                        <div class="overflow-x-auto rounded-xl border border-gray-300 shadow-sm w-full">
-                            <table class="text-base text-gray-700 min-w-max w-full">
-                                <thead class="text-sm bg-gray-200 text-gray-800 border-b-2 border-gray-400">
-                                    <tr>
-            `;
-            
-            if (state.subTab === 'room') {
-                html += `
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-32">배정 교실</th>
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-32">이름</th>
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-40">교과</th>
-                                        <th class="px-6 py-3 text-center font-bold whitespace-nowrap">공동 사용자</th>
-                `;
-            } else { // 교사별 탭 열 순서: 이름, 배정 교실, 교과, 공동 사용자 (모두 가운데 정렬)
-                html += `
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-32">이름</th>
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-32">배정 교실</th>
-                                        <th class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-300 w-40">교과</th>
-                                        <th class="px-6 py-3 text-center font-bold whitespace-nowrap">공동 사용자</th>
-                `;
-            }
-
-            html += `
-                                    </tr>
-                                </thead>
-                                <tbody>
-            `;
-            
-            let prevGroupVal = null;
-            let bgClass = "bg-white";
-            let altColors = ["bg-white", "bg-green-50"];
-            let colorIndex = 0;
-
-            sortedData.forEach((row, index) => {
-                let currentGroupVal = state.subTab === 'room' ? row.room : row.name;
-                if (index === 0) prevGroupVal = currentGroupVal;
-                else if (currentGroupVal !== prevGroupVal) {
-                    colorIndex = (colorIndex + 1) % 2;
-                    bgClass = altColors[colorIndex];
-                    prevGroupVal = currentGroupVal;
-                }
-
-                html += `
-                    <tr class="${bgClass} border-b border-gray-200 hover:bg-yellow-50 transition-colors">
-                `;
+                const dataObj = type === 'empty2' ? emptyRoomDataGrade2 : emptyRoomDataGrade3;
+                const data = [];
+                const periods = ['1교시', '2교시', '3교시', '4교시', '5교시', '6교시', '7교시'];
+                const days = ['월', '화', '수', '목', '금'];
                 
-                // All text-center applied
-                if (state.subTab === 'room') {
-                    html += `
-                        <td class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-200">${row.room}</td>
-                        <td class="px-4 py-3 text-center font-medium whitespace-nowrap border-r border-gray-200">${row.name}</td>
-                        <td class="px-4 py-3 text-center whitespace-nowrap border-r border-gray-200">${row.subject}</td>
-                        <td class="px-6 py-3 text-center whitespace-nowrap">${row.coUser}</td>
-                    `;
-                } else {
-                    html += `
-                        <td class="px-4 py-3 text-center font-medium whitespace-nowrap border-r border-gray-200">${row.name}</td>
-                        <td class="px-4 py-3 text-center font-bold whitespace-nowrap border-r border-gray-200">${row.room}</td>
-                        <td class="px-4 py-3 text-center whitespace-nowrap border-r border-gray-200">${row.subject}</td>
-                        <td class="px-6 py-3 text-center whitespace-nowrap">${row.coUser}</td>
-                    `;
-                }
-
-                html += `
-                    </tr>
-                `;
-            });
-
-            html += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                ${getNoticeHTML()}
-            `;
-            container.innerHTML = html;
-            updateSubTabUI();
-        }
-
-        function generateEmptyRoomCell(grade, day, period, data) {
-            const rooms = data[period][day];
-            if (!rooms || rooms.length === 0) return '-';
-            if (rooms[0] === '과제탐구') return '<span class="text-gray-500 font-bold whitespace-nowrap">과제탐구</span>';
-
-            return rooms.map(room => {
-                let isPurple = false;
-                if (day === '목') {
-                    if (grade === '3' && (period === '1교시' || period === '2교시') && ['1','3','7'].includes(room)) isPurple = true;
-                    if (grade === '2' && (period === '3교시' || period === '4교시') && ['5','6','8'].includes(room)) isPurple = true;
-                }
-                return isPurple ? `<span class="text-purple-600 font-bold whitespace-nowrap" title="스포츠(우천 시)">${room}</span>` : `<span class="whitespace-nowrap">${room}</span>`;
-            }).join(', ');
-        }
-
-        function renderEmptyRoomTab(container) {
-            const data = state.subTab === 'grade2' ? emptyRoomDataGrade2 : emptyRoomDataGrade3;
-            const gradeNum = state.subTab === 'grade2' ? '2' : '3';
-            
-            let html = `
-                <div class="p-6 flex-grow flex flex-col w-full items-center">
-                    <!-- 서브 탭 (가운데 정렬) -->
-                    <div class="flex justify-center space-x-4 mb-6 w-full max-w-7xl">
-                        <button id="subtab-grade2" onclick="setSubTab('grade2')" class="sub-tab-btn px-8 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm border-2">2학년</button>
-                        <button id="subtab-grade3" onclick="setSubTab('grade3')" class="sub-tab-btn px-8 py-2.5 rounded-full font-bold text-lg transition-all shadow-sm border-2">3학년</button>
-                    </div>
-
-                    <div class="flex justify-center w-full max-w-7xl">
-                        <div class="overflow-x-auto rounded-xl border border-gray-300 shadow-sm w-full max-w-4xl">
-                            <table class="w-full text-base text-gray-700 border-collapse">
-                                <thead class="bg-gray-200 text-gray-800 border-b-2 border-gray-400">
-                                    <tr>
-                                        <th class="px-5 py-4 w-20 text-center font-bold text-xl border-r border-gray-300"></th>
-                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap border-r border-gray-300 w-1/5">월</th>
-                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap border-r border-gray-300 w-1/5">화</th>
-                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap border-r border-gray-300 w-1/5">수</th>
-                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap border-r border-gray-300 w-1/5">목</th>
-                                        <th class="px-6 py-4 text-center font-bold text-xl whitespace-nowrap w-1/5">금</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white">
-            `;
-
-            ['1교시', '2교시', '3교시', '4교시', '5교시', '6교시', '7교시'].forEach(period => {
-                let pNum = period.replace('교시', '');
-                html += `<tr class="hover:bg-gray-50 transition-colors border-b border-gray-200 last:border-0">`;
-                html += `<td class="px-5 py-4 text-center font-bold text-xl bg-gray-50 whitespace-nowrap border-r border-gray-200">${pNum}</td>`;
-                ['월', '화', '수', '목', '금'].forEach((day, idx) => {
-                    let borderClass = idx < 4 ? 'border-r border-gray-200' : '';
-                    html += `<td class="px-6 py-4 text-center font-medium text-lg whitespace-nowrap ${borderClass}">${generateEmptyRoomCell(gradeNum, day, period, data)}</td>`;
+                periods.forEach(p => {
+                    let row = { '교시': p };
+                    days.forEach(d => {
+                        row[d] = (dataObj[p] && dataObj[p][d]) ? dataObj[p][d].join(', ') : '';
+                    });
+                    data.push(row);
                 });
-                html += `</tr>`;
-            });
+                ws = XLSX.utils.json_to_sheet(data);
+                fileName = type === 'empty2' ? '공강교실현황_2학년.xlsx' : '공강교실현황_3학년.xlsx';
+            }
 
-            html += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-8 bg-gray-50 border border-gray-300 rounded-xl p-5 text-base text-gray-700 shadow-sm flex flex-col md:flex-row gap-4 items-start w-full max-w-4xl">
-                        <div class="text-primary font-bold whitespace-nowrap flex items-center">
-                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            참고
-                        </div>
-                        <ul class="list-disc ml-4 space-y-1">
-                            <li>DS 1실과 시청각실(주경미), DS 3실(홍지연), 상상나래실(박혜란)은 관리 담당자와 의논한 후 사용.</li>
-                            <li><span class="text-purple-600 font-bold">보라색으로 표시된 학급</span>(목요일 3학년 1~2교시, 2학년 3~4교시)은 우천 시 스포츠 사용, 평소에는 사용 가능.</li>
-                        </ul>
-                    </div>
-                </div>
-                ${getNoticeHTML()}
-            `;
-            container.innerHTML = html;
-            updateSubTabUI();
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+            XLSX.writeFile(wb, fileName);
         }
+
+        function handleFileUpload(e, type) {
+            const file = e.target.files[0]; 
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
+
+                    if (type === 'assignment') {
+                        assignmentData = json.map(row => ({
+                            room: String(row['배정 교실'] || '').trim(),
+                            name: String(row['이름'] || '').trim(),
+                            subject: String(row['교과'] || '').trim(),
+                            coUser: String(row['공동 사용자'] || '').trim()
+                        }));
+                    } else {
+                        const parsedData = {};
+                        const periods = ['1교시', '2교시', '3교시', '4교시', '5교시', '6교시', '7교시'];
+                        const days = ['월', '화', '수', '목', '금'];
+                        
+                        // 기본 구조 초기화
+                        periods.forEach(p => { parsedData[p] = { '월':[], '화':[], '수':[], '목':[], '금':[] }; });
+
+                        json.forEach(row => {
+                            const p = row['교시'];
+                            if(p && parsedData[p]) {
+                                days.forEach(d => {
+                                    const val = row[d];
+                                    if(val) {
+                                        // 쉼표로 분리 후 여백 제거, 빈 값 필터링
+                                        parsedData[p][d] = String(val).split(',').map(s => s.trim()).filter(s => s);
+                                    }
+                                });
+                            }
+                        });
+                        if (type === 'empty2') emptyRoomDataGrade2 = parsedData;
+                        else emptyRoomDataGrade3 = parsedData;
+                    }
+                    saveData(); 
+                    showCustomMsg('✅ 성공적으로 엑셀 데이터가 반영되었습니다.'); 
+                    e.target.value = ''; 
+                    renderContent();
+                } catch(err) { 
+                    console.error(err);
+                    showCustomMsg('❌ 엑셀 데이터 처리 중 오류가 발생했습니다.\n형식이 올바른지 확인해주세요.'); 
+                    e.target.value = ''; 
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function confirmResetAllData() {
+            showCustomMsg("⚠️ 모든 데이터를 초기화하시겠습니까?\n이 작업은 되돌릴 수 없습니다!", true, (conf) => {
+                if (conf) {
+                    assignmentData = JSON.parse(JSON.stringify(defaultAssignmentData));
+                    emptyRoomDataGrade2 = JSON.parse(JSON.stringify(defaultEmptyRoomDataGrade2));
+                    emptyRoomDataGrade3 = JSON.parse(JSON.stringify(defaultEmptyRoomDataGrade3));
+                    overlapRecords = []; saveData(); toggleAdminModal(); renderContent();
+                    setTimeout(() => showCustomMsg("✅ 초기화가 완료되었습니다."), 300);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { renderTabs(); renderContent(); });
     </script>
 </body>
 </html>
+```eof
